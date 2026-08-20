@@ -54,6 +54,19 @@
             <span class="you-initials">ME</span>
             <span class="you-label">You</span>
           </div>
+          <article class="person-card" id="person-card" aria-hidden="true" aria-live="polite">
+            <button class="card-close" id="card-close" type="button" aria-label="Close person card">×</button>
+            <div class="card-portrait-wrap"><img class="card-portrait" id="card-portrait" alt="" /></div>
+            <div class="card-content">
+              <p class="card-kicker">A person in my circle</p>
+              <h2 id="card-name"></h2>
+              <dl class="card-details">
+                <div><dt>Relationship</dt><dd id="card-role"></dd></div>
+                <div><dt>Group</dt><dd id="card-group"></dd></div>
+              </dl>
+              <p class="card-note" id="card-note"></p>
+            </div>
+          </article>
           <div class="map-hint"><span aria-hidden="true">✥</span> Drag to arrange</div>
         </div>
       </div>
@@ -61,6 +74,6 @@
     </section>
   </main>
 
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>
