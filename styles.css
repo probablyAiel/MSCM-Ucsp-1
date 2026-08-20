@@ -1,3 +1,4 @@
+.person-node { top: 0; left: 50%; z-index: 3; display: flex; gap: 8px; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; pointer-events: auto; transition: filter .25s ease; }
 :root {
   --ink: #202421;
   --muted: #7a8079;

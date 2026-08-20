@@ -26,12 +26,17 @@ function render() {
   ringTracks.forEach((track) => track.replaceChildren());
 
   people.forEach((person) => {
-    const node = document.createElement("div");
+      const node = document.createElement("button");
     node.className = "person-node";
+      node.type = "button";
+      node.setAttribute("aria-label", `Show information about ${person.name}`);
     node.dataset.ring = person.ring;
     node.innerHTML = `<span class="person-face" style="background:${person.color}">${person.initials}</span><span class="person-name">${person.name}</span><span class="person-role">${person.role}</span>`;
     ringTracks[person.ring - 1].append(node);
-    node.addEventListener("click", () => selectPerson(person));
+      node.addEventListener("click", (event) => {
+        event.stopPropagation();
+        selectPerson(person);
+      });
 
     const face = node.querySelector(".person-face");
     node.style.setProperty("--face-half", `${face.offsetHeight / 2}px`);
