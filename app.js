@@ -11,6 +11,8 @@ const defaultPeople = [
 
 const map = document.querySelector("#circle-map");
 const ringTracks = [...document.querySelectorAll(".ring-track")];
+const connectionLines = [...document.querySelectorAll(".connection")];
+const youNode = document.querySelector(".you-node");
 const personCard = document.querySelector("#person-card");
 const cardClose = document.querySelector("#card-close");
 const cardPortrait = document.querySelector("#card-portrait");
@@ -115,6 +117,40 @@ function findPersonAtPoint(event) {
   return closest;
 }
 
+function updateConnections() {
+  const mapBounds = map.getBoundingClientRect();
+  const meBounds = youNode.getBoundingClientRect();
+  const originX = meBounds.left + meBounds.width / 2;
+  const originY = meBounds.top + meBounds.height / 2;
+
+  connectionLines.forEach((line) => {
+    const ring = Number(line.dataset.ring);
+    let closestNode = null;
+    let closestDistance = Infinity;
+    document.querySelectorAll(`.person-node[data-ring="${ring}"]`).forEach((node) => {
+      const face = node.querySelector(".person-face").getBoundingClientRect();
+      const faceX = face.left + face.width / 2;
+      const faceY = face.top + face.height / 2;
+      const distance = Math.hypot(faceX - originX, faceY - originY);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestNode = { x: faceX, y: faceY };
+      }
+    });
+
+    if (!closestNode) {
+      line.style.width = "0px";
+      return;
+    }
+    const deltaX = closestNode.x - originX;
+    const deltaY = closestNode.y - originY;
+    line.style.left = `${originX - mapBounds.left}px`;
+    line.style.top = `${originY - mapBounds.top}px`;
+    line.style.width = `${Math.hypot(deltaX, deltaY)}px`;
+    line.style.transform = `rotate(${Math.atan2(deltaY, deltaX)}rad)`;
+  });
+}
+
 function randomSpeed() {
   return 0.00015 + Math.random() * 0.0005;
 }
@@ -136,6 +172,8 @@ function animatePeople(timestamp) {
 
     ringTracks[index].style.transform = `rotate(${person.angle}rad)`;
   });
+
+  updateConnections();
 
   requestAnimationFrame(animatePeople);
 }
