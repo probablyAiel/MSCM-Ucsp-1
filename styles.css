@@ -46,9 +46,17 @@ h1 em { color: #7f9b2e; font-style: normal; }
 .icon-button { width: 31px; height: 31px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 19px; }
 .circle-map { position: relative; min-height: 638px; height: auto; flex: 1; overflow: hidden; background: #f7f7f2; }
 .map-grid { position: absolute; inset: 0; opacity: .35; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 46px 46px; mask-image: linear-gradient(to bottom, black, transparent 85%); }
-.orbit { position: absolute; top: 50%; left: 50%; border: 1px solid #d9dbd2; border-radius: 50%; transform: translate(-50%, -50%); }
-.orbit-inner { width: 42%; aspect-ratio: 1; }
-.orbit-outer { width: 72%; aspect-ratio: 1; border-style: dashed; }
+.ring-stage { position: absolute; top: 50%; left: 50%; width: min(92%, calc(100vh - 190px)); aspect-ratio: 1; transform: translate(-50%, -50%); }
+.circle-ring { position: absolute; top: 50%; left: 50%; width: var(--ring-size); aspect-ratio: 1; border: 2px solid var(--ring-color); border-radius: 50%; transform: translate(-50%, -50%); }
+.circle-ring span { position: absolute; top: 3px; left: 50%; padding: 2px 7px; background: rgba(247, 247, 242, .9); color: var(--ring-color); font: 9px "DM Mono", monospace; letter-spacing: .2px; text-transform: uppercase; white-space: nowrap; transform: translateX(-50%); }
+.ring-primary { --ring-size: 22%; --ring-color: #e8a49d; }
+.ring-secondary { --ring-size: 32%; --ring-color: #e9b47d; }
+.ring-reference { --ring-size: 42%; --ring-color: #e6cb83; }
+.ring-in { --ring-size: 52%; --ring-color: #acd18e; }
+.ring-out { --ring-size: 62%; --ring-color: #9bcde0; }
+.ring-virtual { --ring-size: 72%; --ring-color: #c0a4d0; }
+.ring-gemeinschaft { --ring-size: 82%; --ring-color: #83b7d4; }
+.ring-gesellschaft { --ring-size: 92%; --ring-color: #7695c3; }
 .connection { position: absolute; height: 1px; transform-origin: left center; background: #d6d8ce; }
 .connection-a { top: 50%; left: 50%; width: 30%; transform: rotate(-29deg); }
 .connection-b { top: 50%; left: 50%; width: 30%; transform: rotate(150deg); }
@@ -74,6 +82,5 @@ h1 em { color: #7f9b2e; font-style: normal; }
   .map-panel { border-right: 0; }
   .workspace { min-height: 600px; flex: none; }
   .circle-map { min-height: 538px; }
-  .orbit-inner { width: 54%; }
-  .orbit-outer { width: 90%; }
+  .ring-stage { width: min(92%, calc(100vh - 170px)); }
 }
