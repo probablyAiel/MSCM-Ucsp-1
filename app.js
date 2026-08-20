@@ -21,22 +21,20 @@ const cardNote = document.querySelector("#card-note");
 const groupNames = ["Primary Groups", "Secondary Groups", "Reference Groups", "In Groups", "Out Groups", "Virtual Groups", "Gemeinschaft", "Gesellschaft"];
 let people = [...defaultPeople];
 let isPaused = false;
+let pendingPerson = null;
 
 function render() {
   ringTracks.forEach((track) => track.replaceChildren());
 
-  people.forEach((person) => {
+  people.forEach((person, index) => {
       const node = document.createElement("button");
     node.className = "person-node";
       node.type = "button";
       node.setAttribute("aria-label", `Show information about ${person.name}`);
     node.dataset.ring = person.ring;
+    node.dataset.personIndex = index;
     node.innerHTML = `<span class="person-face" style="background:${person.color}">${person.initials}</span><span class="person-name">${person.name}</span><span class="person-role">${person.role}</span>`;
     ringTracks[person.ring - 1].append(node);
-      node.addEventListener("click", (event) => {
-        event.stopPropagation();
-        selectPerson(person);
-      });
 
     const face = node.querySelector(".person-face");
     node.style.setProperty("--face-half", `${face.offsetHeight / 2}px`);
@@ -45,6 +43,9 @@ function render() {
 
 function selectPerson(person) {
   isPaused = true;
+  pendingPerson = person;
+  personCard.classList.remove("is-visible");
+  personCard.setAttribute("aria-hidden", "true");
   people.forEach((item) => {
     item.nextChange = Infinity;
   });
@@ -53,21 +54,23 @@ function selectPerson(person) {
   ringTracks[person.ring - 1].classList.add("is-focused");
   ringTracks[person.ring - 1].style.transform = "rotate(0rad)";
   document.querySelectorAll(".person-node").forEach((node) => node.classList.toggle("is-selected", node.dataset.ring === String(person.ring)));
-  cardPortrait.src = person.image;
-  cardPortrait.alt = `${person.name} portrait`;
-  cardPortrait.style.backgroundColor = person.color;
-  cardName.textContent = person.name;
-  cardRole.textContent = person.role;
-  cardGroup.textContent = groupNames[person.ring - 1];
-  cardNote.textContent = person.note;
-  personCard.classList.add("is-visible");
-  personCard.setAttribute("aria-hidden", "false");
-
   const selectedNode = ringTracks[person.ring - 1].querySelector(".person-node");
-  requestAnimationFrame(() => {
-    positionPersonCard(selectedNode);
-    window.setTimeout(() => positionPersonCard(selectedNode), 720);
-  });
+  const focusedTrack = ringTracks[person.ring - 1];
+  const revealCard = () => {
+    if (pendingPerson !== person) return;
+    cardPortrait.src = person.image;
+    cardPortrait.alt = `${person.name} portrait`;
+    cardPortrait.style.backgroundColor = person.color;
+    cardName.textContent = person.name;
+    cardRole.textContent = person.role;
+    cardGroup.textContent = groupNames[person.ring - 1];
+    cardNote.textContent = person.note;
+    personCard.classList.add("is-visible");
+    personCard.setAttribute("aria-hidden", "false");
+    requestAnimationFrame(() => positionPersonCard(selectedNode));
+  };
+  focusedTrack.addEventListener("transitionend", revealCard, { once: true });
+  window.setTimeout(revealCard, 760);
 }
 
 function positionPersonCard(selectedNode) {
@@ -85,6 +88,7 @@ function positionPersonCard(selectedNode) {
 
 function closePersonCard() {
   isPaused = false;
+  pendingPerson = null;
   personCard.classList.remove("is-visible");
   personCard.setAttribute("aria-hidden", "true");
   ringTracks.forEach((track) => track.classList.remove("is-focused"));
@@ -92,6 +96,23 @@ function closePersonCard() {
   people.forEach((item) => {
     item.nextChange = 0;
   });
+}
+
+function findPersonAtPoint(event) {
+  const point = { x: event.clientX, y: event.clientY };
+  let closest = null;
+  let closestDistance = Infinity;
+  document.querySelectorAll(".person-node").forEach((node) => {
+    const bounds = node.querySelector(".person-face").getBoundingClientRect();
+    const centerX = bounds.left + bounds.width / 2;
+    const centerY = bounds.top + bounds.height / 2;
+    const distance = Math.hypot(point.x - centerX, point.y - centerY);
+    if (distance <= Math.max(bounds.width, bounds.height) * 0.7 && distance < closestDistance) {
+      closest = people[Number(node.dataset.personIndex)];
+      closestDistance = distance;
+    }
+  });
+  return closest;
 }
 
 function randomSpeed() {
@@ -125,6 +146,10 @@ document.querySelector("#reset-map").addEventListener("click", () => {
   render();
 });
 cardClose.addEventListener("click", closePersonCard);
+map.addEventListener("click", (event) => {
+  const person = findPersonAtPoint(event);
+  if (person) selectPerson(person);
+});
 document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click", () => {
   document.querySelectorAll(".tab").forEach((item) => {
     item.classList.toggle("is-active", item === tab);
