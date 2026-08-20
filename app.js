@@ -33,11 +33,6 @@ function randomSpeed() {
 }
 
 function animatePeople(timestamp) {
-  const mapBounds = map.getBoundingClientRect();
-  const stageBounds = ringStage.getBoundingClientRect();
-  const centerX = stageBounds.left + stageBounds.width / 2;
-  const centerY = stageBounds.top + stageBounds.height / 2;
-
   people.forEach((person, index) => {
     if (timestamp >= person.nextChange) {
       person.targetSpeed = randomSpeed();
@@ -46,12 +41,10 @@ function animatePeople(timestamp) {
     person.speed += (person.targetSpeed - person.speed) * 0.012;
     person.angle += person.speed * person.direction;
 
-    const radius = stageBounds.width * (ringSizes[person.ring - 1] / 100) / 2;
-    const x = centerX + Math.cos(person.angle) * radius;
-    const y = centerY + Math.sin(person.angle) * radius;
+    const radius = ringSizes[person.ring - 1] / 2;
     const node = peopleLayer.children[index];
-    node.style.left = `${((x - mapBounds.left) / mapBounds.width) * 100}%`;
-    node.style.top = `${((y - mapBounds.top) / mapBounds.height) * 100}%`;
+    node.style.left = `${50 + Math.cos(person.angle) * radius}%`;
+    node.style.top = `${50 + Math.sin(person.angle) * radius}%`;
   });
 
   requestAnimationFrame(animatePeople);
