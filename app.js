@@ -139,6 +139,7 @@ function updateConnections() {
         closestNode = {
           x: faceX,
           y: faceY,
+          radius: face.width / 2,
           color: getComputedStyle(node.closest(".circle-ring")).getPropertyValue("--ring-color").trim()
         };
       }
@@ -152,7 +153,7 @@ function updateConnections() {
     const deltaY = closestNode.y - originY;
     line.style.left = `${originX - mapBounds.left}px`;
     line.style.top = `${originY - mapBounds.top}px`;
-    line.style.width = `${Math.hypot(deltaX, deltaY)}px`;
+    line.style.width = `${Math.max(0, Math.hypot(deltaX, deltaY) - closestNode.radius - 4)}px`;
     line.style.transform = `rotate(${Math.atan2(deltaY, deltaX)}rad)`;
     line.style.backgroundColor = closestNode.color;
   });

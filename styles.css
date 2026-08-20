@@ -61,7 +61,7 @@ h1 em { color: #7f9b2e; font-style: normal; }
 .ring-virtual { --ring-size: 72%; --ring-color: #c0a4d0; }
 .ring-gemeinschaft { --ring-size: 82%; --ring-color: #83b7d4; }
 .ring-gesellschaft { --ring-size: 92%; --ring-color: #7695c3; }
-.connections-layer { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.connections-layer { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
 .connection { position: absolute; height: 2px; transform-origin: left center; background: #cdd1c6; opacity: .85; }
 .you-node, .person-node { position: absolute; display: flex; flex-direction: column; align-items: center; user-select: none; }
 .you-node { top: 50%; left: 50%; z-index: 2; transform: translate(-50%, -50%); }
