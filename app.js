@@ -20,10 +20,30 @@ const cardName = document.querySelector("#card-name");
 const cardRole = document.querySelector("#card-role");
 const cardGroup = document.querySelector("#card-group");
 const cardNote = document.querySelector("#card-note");
+const personDialog = document.querySelector("#person-dialog");
+const personForm = document.querySelector("#person-form");
+const imageInput = document.querySelector("#person-image");
+const imageLabel = document.querySelector("#image-label");
+const formError = document.querySelector("#form-error");
 const groupNames = ["Primary Groups", "Secondary Groups", "Reference Groups", "In Groups", "Out Groups", "Virtual Groups", "Gemeinschaft", "Gesellschaft"];
-let people = [...defaultPeople];
+const ringColors = ["#e8a49d", "#e9b47d", "#e6cb83", "#acd18e", "#9bcde0", "#c0a4d0", "#83b7d4", "#7695c3"];
+const storageKey = "social-circle-people";
+let people = loadPeople();
 let isPaused = false;
 let pendingPerson = null;
+
+function loadPeople() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(storageKey));
+    return Array.isArray(saved) && saved.length ? saved : [...defaultPeople];
+  } catch {
+    return [...defaultPeople];
+  }
+}
+
+function savePeople() {
+  localStorage.setItem(storageKey, JSON.stringify(people));
+}
 
 function render() {
   ringTracks.forEach((track) => track.replaceChildren());
@@ -35,7 +55,7 @@ function render() {
     node.setAttribute("aria-label", `Show information about ${person.name}`);
     node.dataset.ring = person.ring;
     node.dataset.personIndex = index;
-    node.innerHTML = `<span class="person-face" style="background:${person.color}">${person.initials}</span><span class="person-name">${person.name}</span><span class="person-role">${person.role}</span>`;
+    node.innerHTML = `<span class="person-face" style="background:${person.color}${person.image ? `;background-image:url('${person.image}')` : ""}">${person.initials}</span><span class="person-name">${person.name}</span><span class="person-role">${person.role}</span>`;
     ringTracks[person.ring - 1].append(node);
 
     const face = node.querySelector(".person-face");
@@ -129,7 +149,10 @@ function updateConnections() {
     const ring = Number(line.dataset.ring);
     let closestNode = null;
     let closestDistance = Infinity;
-    document.querySelectorAll(`.person-node[data-ring="${ring}"]`).forEach((node) => {
+    const ringNodes = [...document.querySelectorAll(`.person-node[data-ring="${ring}"]`)];
+    const mainNode = ringNodes.find((node) => people[Number(node.dataset.personIndex)]?.main);
+    const nodesToCheck = mainNode ? [mainNode] : ringNodes;
+    nodesToCheck.forEach((node) => {
       const face = node.querySelector(".person-face").getBoundingClientRect();
       const faceX = face.left + face.width / 2;
       const faceY = face.top + face.height / 2;
@@ -157,6 +180,69 @@ function updateConnections() {
     line.style.transform = `rotate(${Math.atan2(deltaY, deltaX)}rad)`;
     line.style.backgroundColor = closestNode.color;
   });
+}
+
+function initialsFor(name) {
+  return name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();
+}
+
+function readImage(file) {
+  return new Promise((resolve, reject) => {
+    if (!file) {
+      resolve("");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      reject(new Error("Please choose an image smaller than 5 MB."));
+      return;
+    }
+    const reader = new FileReader();
+    reader.addEventListener("load", () => resolve(reader.result));
+    reader.addEventListener("error", () => reject(new Error("That image could not be read.")));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function addPerson(event) {
+  event.preventDefault();
+  formError.textContent = "";
+  const formData = new FormData(personForm);
+  const name = formData.get("fullName").trim();
+  const role = formData.get("relationship").trim();
+  const ring = Number(formData.get("ring"));
+  const main = formData.get("main") === "on";
+  if (!name || !role || !ring) return;
+
+  try {
+    const image = await readImage(imageInput.files[0]);
+    if (main) {
+      people.forEach((person) => {
+        if (person.ring === ring) person.main = false;
+      });
+    }
+    people.push({
+      name,
+      role,
+      initials: initialsFor(name),
+      color: ringColors[ring - 1],
+      ring,
+      main,
+      image,
+      note: formData.get("note").trim() || `${name} is part of my ${groupNames[ring - 1].toLowerCase()} circle.`,
+      angle: Math.random() * Math.PI * 2,
+      direction: Math.random() > .5 ? 1 : -1,
+      speed: 0.0003,
+      targetSpeed: 0.0003,
+      nextChange: 0
+    });
+    savePeople();
+    render();
+    personForm.reset();
+    imageLabel.textContent = "Add a portrait";
+    personDialog.close();
+  } catch (error) {
+    formError.textContent = error.message;
+  }
 }
 
 function randomSpeed() {
@@ -191,9 +277,20 @@ function animatePeople(timestamp) {
 document.querySelector("#reset-map").addEventListener("click", () => {
   closePersonCard();
   people = [...defaultPeople];
+  savePeople();
   render();
 });
 cardClose.addEventListener("click", closePersonCard);
+document.querySelector("#add-person-button").addEventListener("click", () => {
+  formError.textContent = "";
+  personDialog.showModal();
+});
+document.querySelector("#dialog-close").addEventListener("click", () => personDialog.close());
+document.querySelector("#cancel-person").addEventListener("click", () => personDialog.close());
+imageInput.addEventListener("change", () => {
+  imageLabel.textContent = imageInput.files[0]?.name || "Add a portrait";
+});
+personForm.addEventListener("submit", addPerson);
 map.addEventListener("click", (event) => {
   const person = findPersonAtPoint(event);
   if (person) selectPerson(person);

@@ -17,6 +17,7 @@ Then visit http://localhost:8000.
 - Eight pastel relationship rings, ordered from Primary Groups to Gesellschaft
 - Pre-existing people orbiting their assigned rings with smooth variable-speed motion
 - Live connectors from `ME` to the closest person in each ring
+- Add-person form with ring assignment, main-person connector selection, notes, and local portrait uploads
 - Clickable people with a focused ring and an information card containing their portrait, relationship, group, and context
 - Responsive layout for desktop and mobile screens
 
@@ -26,7 +27,7 @@ Every push to `main` automatically deploys the site through GitHub Actions. Once
 
 https://bensaccountidk.github.io/MSCM-Ucsp-1/
 
-The current prototype is a static client-side experience. People, ring assignments, portraits, and explanations are defined in `app.js`; there is no backend or persistent data store yet.
+The current prototype is a static client-side experience. People added through the form are saved in the browser's local storage; there is no shared backend yet.
 
 ## Deployment
 
