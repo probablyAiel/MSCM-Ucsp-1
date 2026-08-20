@@ -21,6 +21,7 @@ The map is intentionally personal, quiet, and a little playful. People orbit the
 - List view uses a polished directory layout with ring-colored sections, profile cards, notes, and a compact people summary
 - Lets a person focus independently without moving the other people on that ring
 - Adds new people through a password-gated form
+- Protects the reset control with the Godmother password
 - Supports ring selection, main-person selection, personal notes, and portrait uploads
 - Saves added people in browser local storage for the current device
 - Works as a responsive static website on desktop and mobile
@@ -38,6 +39,8 @@ Then open http://localhost:8000.
 ## Add people
 
 Click **Add person** and enter the workspace password when prompted. The current password is `born`.
+
+The reset control uses the **Godmother** password: `aspiANDgaudi`. It clears the saved people from the current browser and restores the clean slate.
 
 The password is a front-end project gate, not real security. Anyone who can inspect the website source can find it. Real privacy would require a server-side authentication system.
 

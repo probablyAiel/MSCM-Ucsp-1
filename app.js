@@ -16,6 +16,10 @@ const passwordDialog = document.querySelector("#password-dialog");
 const passwordForm = document.querySelector("#password-form");
 const passwordInput = document.querySelector("#add-password");
 const passwordError = document.querySelector("#password-error");
+const resetPasswordDialog = document.querySelector("#reset-password-dialog");
+const resetPasswordForm = document.querySelector("#reset-password-form");
+const resetPasswordInput = document.querySelector("#reset-password");
+const resetPasswordError = document.querySelector("#reset-password-error");
 const personForm = document.querySelector("#person-form");
 const imageInput = document.querySelector("#person-image");
 const imageLabel = document.querySelector("#image-label");
@@ -80,6 +84,21 @@ function closePersonDialog() {
 function closePasswordDialog() {
   passwordDialog.classList.remove("is-open");
   passwordDialog.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("modal-open");
+}
+
+function openResetPasswordDialog() {
+  resetPasswordError.textContent = "";
+  resetPasswordInput.value = "";
+  resetPasswordDialog.classList.add("is-open");
+  resetPasswordDialog.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+  resetPasswordInput.focus();
+}
+
+function closeResetPasswordDialog() {
+  resetPasswordDialog.classList.remove("is-open");
+  resetPasswordDialog.setAttribute("aria-hidden", "true");
   document.body.classList.remove("modal-open");
 }
 
@@ -353,6 +372,20 @@ function unlockAddPerson(event) {
   openPersonDialog();
 }
 
+function unlockReset(event) {
+  event.preventDefault();
+  if (resetPasswordInput.value !== "aspiANDgaudi") {
+    resetPasswordError.textContent = "That password does not unlock reset access.";
+    resetPasswordInput.select();
+    return;
+  }
+  closeResetPasswordDialog();
+  closePersonCard();
+  people = [...defaultPeople];
+  localStorage.removeItem(storageKey);
+  render();
+}
+
 function randomSpeed() {
   return 0.00015 + Math.random() * 0.0005;
 }
@@ -418,10 +451,7 @@ function animatePeople(timestamp) {
 }
 
 document.querySelector("#reset-map").addEventListener("click", () => {
-  closePersonCard();
-  people = [...defaultPeople];
-  savePeople();
-  render();
+  openResetPasswordDialog();
 });
 cardClose.addEventListener("click", closePersonCard);
 document.querySelector("#add-person-button").addEventListener("click", openPasswordDialog);
@@ -429,17 +459,24 @@ document.querySelector("#dialog-close").addEventListener("click", closePersonDia
 document.querySelector("#cancel-person").addEventListener("click", closePersonDialog);
 document.querySelector("#password-close").addEventListener("click", closePasswordDialog);
 document.querySelector("#password-cancel").addEventListener("click", closePasswordDialog);
+document.querySelector("#reset-password-close").addEventListener("click", closeResetPasswordDialog);
+document.querySelector("#reset-password-cancel").addEventListener("click", closeResetPasswordDialog);
 passwordForm.addEventListener("submit", unlockAddPerson);
+resetPasswordForm.addEventListener("submit", unlockReset);
 personDialog.addEventListener("click", (event) => {
   if (event.target === personDialog) closePersonDialog();
 });
 passwordDialog.addEventListener("click", (event) => {
   if (event.target === passwordDialog) closePasswordDialog();
 });
+resetPasswordDialog.addEventListener("click", (event) => {
+  if (event.target === resetPasswordDialog) closeResetPasswordDialog();
+});
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
   if (passwordDialog.classList.contains("is-open")) closePasswordDialog();
   if (personDialog.classList.contains("is-open")) closePersonDialog();
+  if (resetPasswordDialog.classList.contains("is-open")) closeResetPasswordDialog();
 });
 imageInput.addEventListener("change", () => {
   imageLabel.textContent = imageInput.files[0]?.name || "Add a portrait";

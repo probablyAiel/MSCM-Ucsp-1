@@ -159,6 +159,23 @@
     </form>
   </div>
 
-  <script src="app.js?v=17"></script>
+  <div class="person-dialog password-dialog" id="reset-password-dialog" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="reset-password-title">
+    <form id="reset-password-form">
+      <button class="dialog-close" id="reset-password-close" type="button" aria-label="Close reset password prompt">×</button>
+      <p class="eyebrow">Godmother access</p>
+      <h2 id="reset-password-title">Reset the circle?</h2>
+      <p class="password-copy">This clears every saved person from this browser and returns the map to a clean slate.</p>
+      <label class="form-field">Password
+        <input id="reset-password" type="password" autocomplete="off" placeholder="Enter reset password" required />
+      </label>
+      <p class="form-error" id="reset-password-error" role="alert"></p>
+      <div class="dialog-actions">
+        <button class="text-button" id="reset-password-cancel" type="button">Cancel</button>
+        <button class="primary-button" type="submit">Clear map</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="app.js?v=18"></script>
 </body>
 </html>
