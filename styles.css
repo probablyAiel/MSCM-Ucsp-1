@@ -57,6 +57,7 @@ h1 em { color: #7f9b2e; font-style: normal; }
 .ring-track { position: absolute; inset: 0; transform-origin: center; will-change: transform; pointer-events: none; }
 .ring-track.is-focused { transition: transform .7s cubic-bezier(.2, .8, .2, 1); }
 .ring-track.is-focused .person-node { transition: transform .7s cubic-bezier(.2, .8, .2, 1), filter .25s ease; }
+.person-orbit { position: absolute; inset: 0; transform: rotate(var(--orbit-offset, 0rad)); transform-origin: center; }
 .ring-primary { --ring-size: 22%; --ring-color: #e8a49d; }
 .ring-secondary { --ring-size: 32%; --ring-color: #e9b47d; }
 .ring-reference { --ring-size: 42%; --ring-color: #e6cb83; }

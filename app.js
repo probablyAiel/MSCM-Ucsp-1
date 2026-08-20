@@ -31,6 +31,14 @@ const storageKey = "social-circle-people";
 let people = loadPeople();
 let isPaused = false;
 let pendingPerson = null;
+const ringAngles = groupNames.map((_, index) => people.find((person) => person.ring === index + 1)?.angle || 0);
+const ringSpeeds = groupNames.map(() => 0.0003);
+const ringTargetSpeeds = groupNames.map(() => 0.0003);
+const ringNextChanges = groupNames.map(() => 0);
+
+people.forEach((person) => {
+  if (typeof person.orbitOffset !== "number") person.orbitOffset = 0;
+});
 
 function loadPeople() {
   try {
@@ -63,6 +71,11 @@ function render() {
   ringTracks.forEach((track) => track.replaceChildren());
 
   people.forEach((person, index) => {
+    const track = ringTracks[person.ring - 1];
+    if (!track) return;
+    const orbit = document.createElement("div");
+    orbit.className = "person-orbit";
+    orbit.style.setProperty("--orbit-offset", `${person.orbitOffset}rad`);
     const node = document.createElement("button");
     node.className = "person-node";
     node.type = "button";
@@ -70,10 +83,12 @@ function render() {
     node.dataset.ring = person.ring;
     node.dataset.personIndex = index;
     node.innerHTML = `<span class="person-face" style="background:${person.color}${person.image ? `;background-image:url('${person.image}')` : ""}">${person.initials}</span><span class="person-name">${person.name}</span><span class="person-role">${person.role}</span>`;
-    ringTracks[person.ring - 1].append(node);
+    orbit.append(node);
+    track.append(orbit);
 
     const face = node.querySelector(".person-face");
     node.style.setProperty("--face-half", `${face.offsetHeight / 2}px`);
+    node.style.setProperty("--counter-rotation", `${-ringAngles[person.ring - 1] - person.orbitOffset}rad`);
   });
 }
 
@@ -85,15 +100,20 @@ function selectPerson(person) {
   people.forEach((item) => {
     item.nextChange = Infinity;
   });
-  const shortestTurn = Math.atan2(Math.sin(-person.angle), Math.cos(-person.angle));
-  person.angle += shortestTurn;
+  const ringIndex = person.ring - 1;
+  const targetRingAngle = -person.orbitOffset;
+  const shortestTurn = Math.atan2(Math.sin(targetRingAngle - ringAngles[ringIndex]), Math.cos(targetRingAngle - ringAngles[ringIndex]));
+  ringAngles[ringIndex] += shortestTurn;
   ringTracks.forEach((track) => track.classList.remove("is-focused"));
-  ringTracks[person.ring - 1].classList.add("is-focused");
-  ringTracks[person.ring - 1].style.transform = `rotate(${person.angle}rad)`;
-  document.querySelectorAll(".person-node").forEach((node) => node.classList.toggle("is-selected", node.dataset.ring === String(person.ring)));
-  const selectedNode = ringTracks[person.ring - 1].querySelector(".person-node");
-  selectedNode.style.setProperty("--counter-rotation", `${-person.angle}rad`);
-  const focusedTrack = ringTracks[person.ring - 1];
+  ringTracks[ringIndex].classList.add("is-focused");
+  ringTracks[ringIndex].style.transform = `rotate(${ringAngles[ringIndex]}rad)`;
+  document.querySelectorAll(".person-node").forEach((node) => node.classList.toggle("is-selected", node.dataset.personIndex === String(people.indexOf(person))));
+  document.querySelectorAll(`.person-node[data-ring="${person.ring}"]`).forEach((node) => {
+    const owner = people[Number(node.dataset.personIndex)];
+    node.style.setProperty("--counter-rotation", `${-ringAngles[ringIndex] - owner.orbitOffset}rad`);
+  });
+  const selectedNode = ringTracks[ringIndex].querySelector(`[data-person-index="${people.indexOf(person)}"]`);
+  const focusedTrack = ringTracks[ringIndex];
   const revealCard = () => {
     if (pendingPerson !== person) return;
     cardPortrait.src = person.image;
@@ -241,6 +261,7 @@ async function addPerson(event) {
       color: ringColors[ring - 1],
       ring,
       main,
+      orbitOffset: people.some((person) => person.ring === ring) ? Math.random() * Math.PI * 2 : 0,
       image,
       note: formData.get("note").trim() || `${name} is part of my ${groupNames[ring - 1].toLowerCase()} circle.`,
       angle: Math.random() * Math.PI * 2,
@@ -268,19 +289,25 @@ let previousTimestamp = 0;
 function animatePeople(timestamp) {
   const delta = previousTimestamp ? Math.min(timestamp - previousTimestamp, 32) : 16;
   previousTimestamp = timestamp;
-  people.forEach((person, index) => {
-    if (isPaused) return;
-    if (timestamp >= person.nextChange) {
-      person.targetSpeed = randomSpeed();
-      person.nextChange = timestamp + 1400 + Math.random() * 2800;
+  if (isPaused) {
+    updateConnections();
+    requestAnimationFrame(animatePeople);
+    return;
+  }
+
+  ringTracks.forEach((track, ringIndex) => {
+    if (timestamp >= ringNextChanges[ringIndex]) {
+      ringTargetSpeeds[ringIndex] = randomSpeed();
+      ringNextChanges[ringIndex] = timestamp + 1400 + Math.random() * 2800;
     }
     const smoothing = 1 - Math.exp(-delta / 900);
-    person.speed += (person.targetSpeed - person.speed) * smoothing;
-    person.angle += person.speed * delta * person.direction;
-
-    ringTracks[index].style.transform = `rotate(${person.angle}rad)`;
-    const node = document.querySelector(`.person-node[data-person-index="${index}"]`);
-    if (node) node.style.setProperty("--counter-rotation", `${-person.angle}rad`);
+    ringSpeeds[ringIndex] += (ringTargetSpeeds[ringIndex] - ringSpeeds[ringIndex]) * smoothing;
+    ringAngles[ringIndex] += ringSpeeds[ringIndex] * delta;
+    track.style.transform = `rotate(${ringAngles[ringIndex]}rad)`;
+    track.querySelectorAll(".person-node").forEach((node) => {
+      const owner = people[Number(node.dataset.personIndex)];
+      node.style.setProperty("--counter-rotation", `${-ringAngles[ringIndex] - owner.orbitOffset}rad`);
+    });
   });
 
   updateConnections();
