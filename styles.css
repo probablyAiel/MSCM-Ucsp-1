@@ -47,7 +47,7 @@ h1 em { color: #7f9b2e; font-style: normal; }
 .icon-button { width: 31px; height: 31px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 19px; }
 .circle-map { position: relative; isolation: isolate; min-height: 638px; height: auto; flex: 1; overflow: hidden; background: #f7f7f2; }
 .map-grid { position: absolute; inset: 0; opacity: .35; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 46px 46px; mask-image: linear-gradient(to bottom, black, transparent 85%); }
-.ring-stage { position: absolute; top: 50%; left: 50%; z-index: 3; width: min(92%, calc(100vh - 190px)); aspect-ratio: 1; transform: translate(-50%, -50%); }
+.ring-stage { position: absolute; top: 50%; left: 50%; z-index: 10; width: min(92%, calc(100vh - 190px)); aspect-ratio: 1; transform: translate(-50%, -50%); }
 .circle-ring { position: absolute; top: 50%; left: 50%; width: var(--ring-size); aspect-ratio: 1; border: 2px solid var(--ring-color); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 .circle-ring > span { position: absolute; top: 3px; left: 50%; padding: 2px 7px; background: rgba(247, 247, 242, .9); color: var(--ring-color); font: 9px "DM Mono", monospace; letter-spacing: .2px; text-transform: uppercase; white-space: nowrap; transform: translateX(-50%); }
 .ring-track { position: absolute; inset: 0; transform-origin: center; will-change: transform; pointer-events: none; }
@@ -61,16 +61,17 @@ h1 em { color: #7f9b2e; font-style: normal; }
 .ring-virtual { --ring-size: 72%; --ring-color: #c0a4d0; }
 .ring-gemeinschaft { --ring-size: 82%; --ring-color: #83b7d4; }
 .ring-gesellschaft { --ring-size: 92%; --ring-color: #7695c3; }
-.connections-layer { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.connections-layer { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
 .connection { position: absolute; height: 2px; transform-origin: left center; background: #cdd1c6; opacity: .85; }
 .you-node, .person-node { position: absolute; display: flex; flex-direction: column; align-items: center; user-select: none; }
-.you-node { top: 50%; left: 50%; z-index: 2; transform: translate(-50%, -50%); }
+.you-node { top: 50%; left: 50%; z-index: 100; transform: translate(-50%, -50%); }
 .you-initials { position: relative; display: grid; width: 70px; height: 70px; place-items: center; padding-bottom: 8px; border: 4px solid #f7f7f2; border-radius: 50%; outline: 1px solid var(--ink); background: var(--ink); color: white; font-size: 16px; font-weight: 800; letter-spacing: 1px; }
 .you-initials::after { content: ""; position: absolute; bottom: 14px; left: 50%; width: 19px; height: 9px; border-bottom: 2px solid var(--lime); border-radius: 0 0 50% 50%; transform: translateX(-50%); }
 .you-label { margin-top: 10px; font: 10px "DM Mono", monospace; text-transform: uppercase; }
-.person-node { top: 0; left: 50%; z-index: 3; gap: 8px; transform: translate(-50%, calc(-1 * var(--face-half))) rotate(var(--counter-rotation, 0rad)); transform-origin: center var(--face-half); cursor: pointer; pointer-events: auto; transition: filter .25s ease; }
+.person-node { top: 0; left: 50%; z-index: 100; gap: 8px; transform: translate(-50%, calc(-1 * var(--face-half))) rotate(var(--counter-rotation, 0rad)); transform-origin: center var(--face-half); cursor: pointer; pointer-events: auto; transition: filter .25s ease; }
 .person-node:hover, .person-node.is-selected { filter: drop-shadow(0 8px 8px rgba(32, 36, 33, .16)); }
 .person-face { display: grid; width: 48px; height: 48px; place-items: center; border: 3px solid #f7f7f2; border-radius: 50%; outline: 1px solid #b8bcb0; color: var(--ink); font-size: 12px; font-weight: 800; }
+.person-name, .person-role { position: relative; z-index: 1; padding: 1px 5px; background: #f7f7f2; }
 .person-name { font-size: 11px; font-weight: 800; white-space: nowrap; }
 .person-role { color: var(--muted); font: 9px "DM Mono", monospace; text-transform: uppercase; }
 .map-hint { position: absolute; right: 20px; bottom: 18px; color: #a1a59c; font: 10px "DM Mono", monospace; text-transform: uppercase; }
