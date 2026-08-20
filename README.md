@@ -40,7 +40,7 @@ Then open http://localhost:8000.
 
 Click **Add person** and enter the workspace password when prompted. The current password is `born`.
 
-The reset control uses the **Godmother** password: `aspiANDgaudi`. It clears the saved people from the current browser and restores the clean slate.
+Click the **Reset** button, enter the reset password when prompted, and confirm to clear every saved person from the current browser and restore a clean slate. The current password is **Godmother**.
 
 The password is a front-end project gate, not real security. Anyone who can inspect the website source can find it. Real privacy would require a server-side authentication system.
 
