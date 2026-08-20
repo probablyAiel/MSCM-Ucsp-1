@@ -48,9 +48,9 @@ h1 em { color: #7f9b2e; font-style: normal; }
 .circle-map { position: relative; min-height: 638px; height: auto; flex: 1; overflow: hidden; background: #f7f7f2; }
 .map-grid { position: absolute; inset: 0; opacity: .35; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 46px 46px; mask-image: linear-gradient(to bottom, black, transparent 85%); }
 .ring-stage { position: absolute; top: 50%; left: 50%; z-index: 1; width: min(92%, calc(100vh - 190px)); aspect-ratio: 1; transform: translate(-50%, -50%); }
-.circle-ring { position: absolute; top: 50%; left: 50%; width: var(--ring-size); aspect-ratio: 1; border: 2px solid var(--ring-color); border-radius: 50%; transform: translate(-50%, -50%); }
+.circle-ring { position: absolute; top: 50%; left: 50%; width: var(--ring-size); aspect-ratio: 1; border: 2px solid var(--ring-color); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 .circle-ring > span { position: absolute; top: 3px; left: 50%; padding: 2px 7px; background: rgba(247, 247, 242, .9); color: var(--ring-color); font: 9px "DM Mono", monospace; letter-spacing: .2px; text-transform: uppercase; white-space: nowrap; transform: translateX(-50%); }
-.ring-track { position: absolute; inset: 0; transform-origin: center; will-change: transform; }
+.ring-track { position: absolute; inset: 0; transform-origin: center; will-change: transform; pointer-events: none; }
 .ring-track.is-focused { transition: transform .7s cubic-bezier(.2, .8, .2, 1); }
 .ring-primary { --ring-size: 22%; --ring-color: #e8a49d; }
 .ring-secondary { --ring-size: 32%; --ring-color: #e9b47d; }
@@ -76,8 +76,8 @@ h1 em { color: #7f9b2e; font-style: normal; }
 .person-role { color: var(--muted); font: 9px "DM Mono", monospace; text-transform: uppercase; }
 .map-hint { position: absolute; right: 20px; bottom: 18px; color: #a1a59c; font: 10px "DM Mono", monospace; text-transform: uppercase; }
 .map-hint span { color: var(--coral); font-size: 15px; vertical-align: -2px; }
-.person-card { position: absolute; right: 24px; bottom: 24px; z-index: 8; display: grid; grid-template-columns: 116px minmax(220px, 280px); gap: 19px; width: min(480px, calc(100% - 48px)); padding: 16px; border: 1px solid rgba(32, 36, 33, .12); border-top: 3px solid var(--card-color, var(--lime)); background: rgba(251, 251, 248, .96); box-shadow: 0 22px 55px rgba(32, 36, 33, .18); opacity: 0; transform: translateY(18px) scale(.97); pointer-events: none; transition: opacity .35s ease, transform .35s cubic-bezier(.2, .8, .2, 1); }
-.person-card.is-visible { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.person-card { position: absolute; top: 0; left: 50%; z-index: 8; display: grid; grid-template-columns: 116px minmax(220px, 280px); gap: 19px; width: min(480px, calc(100% - 48px)); padding: 16px; border: 1px solid rgba(32, 36, 33, .12); border-top: 3px solid var(--card-color, var(--lime)); background: rgba(251, 251, 248, .96); box-shadow: 0 22px 55px rgba(32, 36, 33, .18); opacity: 0; transform: translate(-50%, 18px) scale(.97); pointer-events: none; transition: opacity .35s ease, transform .35s cubic-bezier(.2, .8, .2, 1); }
+.person-card.is-visible { opacity: 1; transform: translate(-50%, 0) scale(1); pointer-events: auto; }
 .card-close { position: absolute; top: 8px; right: 10px; width: 24px; height: 24px; border: 0; background: transparent; color: var(--muted); font-size: 22px; line-height: 1; }
 .card-portrait-wrap { width: 116px; height: 145px; overflow: hidden; background: var(--lime); }
 .card-portrait { width: 100%; height: 100%; display: block; object-fit: cover; }
@@ -99,7 +99,7 @@ h1 em { color: #7f9b2e; font-style: normal; }
   .workspace { min-height: 600px; flex: none; }
   .circle-map { min-height: 538px; }
   .ring-stage { width: min(92%, calc(100vh - 170px)); }
-  .person-card { right: 15px; bottom: 15px; grid-template-columns: 82px minmax(0, 1fr); gap: 13px; width: calc(100% - 30px); padding: 12px; }
+  .person-card { grid-template-columns: 82px minmax(0, 1fr); gap: 13px; width: calc(100% - 30px); padding: 12px; }
   .card-portrait-wrap { width: 82px; height: 112px; }
   .card-content { padding-right: 18px; }
   .card-content h2 { font-size: 19px; }

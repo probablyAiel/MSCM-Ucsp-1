@@ -62,6 +62,25 @@ function selectPerson(person) {
   cardNote.textContent = person.note;
   personCard.classList.add("is-visible");
   personCard.setAttribute("aria-hidden", "false");
+
+  const selectedNode = ringTracks[person.ring - 1].querySelector(".person-node");
+  requestAnimationFrame(() => {
+    positionPersonCard(selectedNode);
+    window.setTimeout(() => positionPersonCard(selectedNode), 720);
+  });
+}
+
+function positionPersonCard(selectedNode) {
+  if (!selectedNode || !personCard.classList.contains("is-visible")) return;
+  const mapBounds = map.getBoundingClientRect();
+  const nodeBounds = selectedNode.getBoundingClientRect();
+  const cardWidth = personCard.getBoundingClientRect().width;
+  const halfWidth = cardWidth / 2;
+  const center = nodeBounds.left + nodeBounds.width / 2 - mapBounds.left;
+  const left = Math.max(halfWidth + 12, Math.min(mapBounds.width - halfWidth - 12, center));
+  const top = Math.max(18, Math.min(mapBounds.height - personCard.offsetHeight - 18, nodeBounds.bottom - mapBounds.top + 18));
+  personCard.style.left = `${left}px`;
+  personCard.style.top = `${top}px`;
 }
 
 function closePersonCard() {
