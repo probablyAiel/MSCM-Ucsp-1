@@ -10,26 +10,21 @@ const defaultPeople = [
 ];
 
 const map = document.querySelector("#circle-map");
-const peopleLayer = document.querySelector("#people-layer");
-const ringStage = document.querySelector(".ring-stage");
-const ringSizes = [22, 32, 42, 52, 62, 72, 82, 92];
+const ringTracks = [...document.querySelectorAll(".ring-track")];
 let people = [...defaultPeople];
 
 function render() {
-  peopleLayer.replaceChildren();
+  ringTracks.forEach((track) => track.replaceChildren());
 
-  people.forEach((person, index) => {
+  people.forEach((person) => {
     const node = document.createElement("div");
     node.className = "person-node";
-    node.dataset.index = index;
     node.dataset.ring = person.ring;
     node.innerHTML = `<span class="person-face" style="background:${person.color}">${person.initials}</span><span class="person-name">${person.name}</span><span class="person-role">${person.role}</span>`;
-    peopleLayer.append(node);
+    ringTracks[person.ring - 1].append(node);
 
     const face = node.querySelector(".person-face");
-    const faceCenter = face.offsetHeight / 2;
-    const nodeCenter = node.offsetHeight / 2;
-    node.style.setProperty("--face-anchor", `${nodeCenter - faceCenter}px`);
+    node.style.setProperty("--face-half", `${face.offsetHeight / 2}px`);
   });
 }
 
@@ -42,8 +37,6 @@ let previousTimestamp = 0;
 function animatePeople(timestamp) {
   const delta = previousTimestamp ? Math.min(timestamp - previousTimestamp, 32) : 16;
   previousTimestamp = timestamp;
-  const stageSize = ringStage.getBoundingClientRect().width;
-
   people.forEach((person, index) => {
     if (timestamp >= person.nextChange) {
       person.targetSpeed = randomSpeed();
@@ -53,11 +46,7 @@ function animatePeople(timestamp) {
     person.speed += (person.targetSpeed - person.speed) * smoothing;
     person.angle += person.speed * delta * person.direction;
 
-    const radius = stageSize * (ringSizes[person.ring - 1] / 100) / 2;
-    const node = peopleLayer.children[index];
-    const x = Math.cos(person.angle) * radius;
-    const y = Math.sin(person.angle) * radius;
-    node.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), 0) translateY(calc(-1 * var(--face-anchor)))`;
+    ringTracks[index].style.transform = `rotate(${person.angle}rad)`;
   });
 
   requestAnimationFrame(animatePeople);
