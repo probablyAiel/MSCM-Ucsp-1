@@ -9,14 +9,10 @@ const defaultPeople = [
 
 const map = document.querySelector("#circle-map");
 const peopleLayer = document.querySelector("#people-layer");
-const peopleList = document.querySelector("#people-list");
-const peopleCount = document.querySelector("#people-count");
 let people = [...defaultPeople];
 
 function render() {
   peopleLayer.replaceChildren();
-  peopleList.replaceChildren();
-  peopleCount.textContent = people.length;
 
   people.forEach((person, index) => {
     const node = document.createElement("div");
@@ -27,11 +23,6 @@ function render() {
     node.innerHTML = `<span class="person-face" style="background:${person.color}">${person.initials}</span><span class="person-name">${person.name}</span><span class="person-role">${person.role}</span>`;
     makeDraggable(node, person);
     peopleLayer.append(node);
-
-    const row = document.createElement("div");
-    row.className = "person-row";
-    row.innerHTML = `<span class="row-face" style="background:${person.color}">${person.initials}</span><span><span class="row-name">${person.name}</span><span class="row-role">${person.role}</span></span><span class="row-time">${person.time}</span>`;
-    peopleList.append(row);
   });
 }
 
@@ -58,10 +49,6 @@ function makeDraggable(node, person) {
 document.querySelector("#reset-map").addEventListener("click", () => {
   people = [...defaultPeople];
   render();
-});
-document.querySelector("#shuffle-button").addEventListener("click", () => {
-  const person = people[Math.floor(Math.random() * people.length)];
-  if (person) alert(`Reach out to ${person.name} today.`);
 });
 document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click", () => {
   document.querySelectorAll(".tab").forEach((item) => {
