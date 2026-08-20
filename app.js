@@ -45,6 +45,20 @@ function savePeople() {
   localStorage.setItem(storageKey, JSON.stringify(people));
 }
 
+function openPersonDialog() {
+  formError.textContent = "";
+  personDialog.classList.add("is-open");
+  personDialog.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+  document.querySelector("#person-full-name").focus();
+}
+
+function closePersonDialog() {
+  personDialog.classList.remove("is-open");
+  personDialog.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("modal-open");
+}
+
 function render() {
   ringTracks.forEach((track) => track.replaceChildren());
 
@@ -239,7 +253,7 @@ async function addPerson(event) {
     render();
     personForm.reset();
     imageLabel.textContent = "Add a portrait";
-    personDialog.close();
+    closePersonDialog();
   } catch (error) {
     formError.textContent = error.message;
   }
@@ -281,12 +295,15 @@ document.querySelector("#reset-map").addEventListener("click", () => {
   render();
 });
 cardClose.addEventListener("click", closePersonCard);
-document.querySelector("#add-person-button").addEventListener("click", () => {
-  formError.textContent = "";
-  personDialog.showModal();
+document.querySelector("#add-person-button").addEventListener("click", openPersonDialog);
+document.querySelector("#dialog-close").addEventListener("click", closePersonDialog);
+document.querySelector("#cancel-person").addEventListener("click", closePersonDialog);
+personDialog.addEventListener("click", (event) => {
+  if (event.target === personDialog) closePersonDialog();
 });
-document.querySelector("#dialog-close").addEventListener("click", () => personDialog.close());
-document.querySelector("#cancel-person").addEventListener("click", () => personDialog.close());
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && personDialog.classList.contains("is-open")) closePersonDialog();
+});
 imageInput.addEventListener("change", () => {
   imageLabel.textContent = imageInput.files[0]?.name || "Add a portrait";
 });

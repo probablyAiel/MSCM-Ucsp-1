@@ -84,11 +84,11 @@
     </section>
   </main>
 
-  <dialog class="person-dialog" id="person-dialog">
+  <div class="person-dialog" id="person-dialog" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="add-person-title">
     <form id="person-form">
       <button class="dialog-close" id="dialog-close" type="button" aria-label="Close add person form">×</button>
       <p class="eyebrow">New connection</p>
-      <h2>Add someone to your circle</h2>
+      <h2 id="add-person-title">Add someone to your circle</h2>
       <div class="form-grid">
         <label class="form-field form-field-wide">Full name
           <input id="person-full-name" name="fullName" type="text" maxlength="50" placeholder="e.g. Jordan Lee" required />
@@ -124,8 +124,8 @@
         <button class="primary-button" type="submit">Add to map</button>
       </div>
     </form>
-  </dialog>
+  </div>
 
-  <script src="app.js?v=10"></script>
+  <script src="app.js?v=11"></script>
 </body>
 </html>
