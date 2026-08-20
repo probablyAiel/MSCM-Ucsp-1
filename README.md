@@ -18,6 +18,7 @@ The map is intentionally personal, quiet, and a little playful. People orbit the
 - Opens a focused profile card with a portrait, name, relationship, group, and personal explanation
 - Includes a List view directory of everyone in the map, with ring labels and main-person badges
 - List view groups people into expandable ring sections and opens profile cards without changing map orbit motion
+- List view uses a polished directory layout with ring-colored sections, profile cards, notes, and a compact people summary
 - Lets a person focus independently without moving the other people on that ring
 - Adds new people through a password-gated form
 - Supports ring selection, main-person selection, personal notes, and portrait uploads

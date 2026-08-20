@@ -23,6 +23,7 @@ const formError = document.querySelector("#form-error");
 const listView = document.querySelector("#list-view");
 const peopleDirectory = document.querySelector("#people-directory");
 const listCount = document.querySelector("#list-count");
+const listSummaryCount = document.querySelector("#list-summary-count");
 const mapPanel = document.querySelector("#map-panel");
 const groupNames = ["Primary Groups", "Secondary Groups", "Reference Groups", "In Groups", "Out Groups", "Virtual Groups", "Gemeinschaft", "Gesellschaft"];
 const ringColors = ["#e8a49d", "#e9b47d", "#e6cb83", "#acd18e", "#9bcde0", "#c0a4d0", "#83b7d4", "#7695c3"];
@@ -111,6 +112,7 @@ function render() {
 function renderList() {
   peopleDirectory.replaceChildren();
   listCount.textContent = `${people.length} ${people.length === 1 ? "person" : "people"}`;
+  listSummaryCount.textContent = String(people.length).padStart(2, "0");
   if (!people.length) {
     const empty = document.createElement("div");
     empty.className = "list-empty";
@@ -134,6 +136,7 @@ function renderList() {
       const card = document.createElement("button");
       card.className = "directory-card";
       card.type = "button";
+      card.style.setProperty("--card-ring-color", ringColors[ringIndex]);
       card.innerHTML = `<span class="directory-avatar" style="background-color:${person.color}${person.image ? `;background-image:url('${person.image}')` : ""}">${person.initials}</span><span class="directory-main"><strong>${person.name}</strong><span>${person.role}</span></span><span class="directory-note">${person.note}</span>${person.main ? "<span class=\"main-badge\">Main connector</span>" : ""}`;
       card.addEventListener("click", () => {
         peopleDirectory.querySelectorAll(".directory-card").forEach((item) => item.classList.remove("is-active"));
