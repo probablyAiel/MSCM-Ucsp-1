@@ -15,6 +15,7 @@ The map is intentionally personal, quiet, and a little playful. People orbit the
 - Supports multiple people in the same ring without replacing anyone
 - Connects `ME` to each ring's selected main person, or the closest person when no main person is set
 - Opens a focused profile card with a portrait, name, relationship, group, and personal explanation
+- Includes a List view directory of everyone in the map, with ring labels and main-person badges
 - Adds new people through a password-gated form
 - Supports ring selection, main-person selection, personal notes, and portrait uploads
 - Saves added people in browser local storage for the current device

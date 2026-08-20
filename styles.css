@@ -50,6 +50,24 @@ h1 em { color: #7f9b2e; font-style: normal; }
 .tab.is-active::after { content: ""; position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: var(--ink); }
 .icon-button { width: 31px; height: 31px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 19px; }
 .circle-map { position: relative; isolation: isolate; min-height: 638px; height: auto; flex: 1; overflow: hidden; background: #f7f7f2; }
+.list-view { min-height: 638px; height: 100%; overflow: auto; padding: 38px 42px; background: #f7f7f2; }
+.list-view-header { display: flex; align-items: end; justify-content: space-between; gap: 24px; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
+.list-view-header .eyebrow { margin-bottom: 8px; }
+.list-view-header h2 { margin: 0; font-size: 28px; letter-spacing: -1.2px; }
+.list-count { color: var(--muted); font: 10px "DM Mono", monospace; text-transform: uppercase; }
+.people-directory { display: grid; gap: 8px; padding-top: 15px; }
+.directory-row { display: grid; grid-template-columns: 48px minmax(160px, 1fr) minmax(130px, .7fr) auto; align-items: center; gap: 16px; width: 100%; padding: 12px 14px; border: 1px solid transparent; border-bottom-color: var(--line); background: transparent; color: var(--ink); text-align: left; transition: border-color .2s ease, background .2s ease, transform .2s ease; }
+.directory-row:hover { border-color: var(--line); background: white; transform: translateX(3px); }
+.directory-avatar { display: grid; width: 48px; height: 48px; place-items: center; border: 3px solid #f7f7f2; border-radius: 50%; outline: 1px solid #b8bcb0; background-position: center; background-size: cover; font-size: 12px; font-weight: 800; }
+.directory-main strong, .directory-main span { display: block; }
+.directory-main strong { margin-bottom: 4px; font-size: 13px; }
+.directory-main span, .directory-group { color: var(--muted); font: 10px "DM Mono", monospace; text-transform: uppercase; }
+.directory-group { padding-left: 16px; border-left: 1px solid var(--line); }
+.main-badge { padding: 5px 7px; background: var(--lime); color: var(--ink); font: 9px "DM Mono", monospace; text-transform: uppercase; }
+.list-empty { display: grid; place-items: center; gap: 8px; min-height: 420px; color: var(--muted); text-align: center; }
+.list-empty strong { color: var(--ink); font-size: 16px; }
+.list-empty span:not(.list-empty-mark) { font-size: 12px; }
+.list-empty-mark { display: grid; width: 42px; height: 42px; place-items: center; margin-bottom: 5px; border-radius: 50%; background: var(--lime); color: var(--ink); font-size: 24px; }
 .map-grid { position: absolute; inset: 0; opacity: .35; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 46px 46px; mask-image: linear-gradient(to bottom, black, transparent 85%); }
 .ring-stage { position: absolute; top: 50%; left: 50%; z-index: 10; width: min(92%, calc(100vh - 190px)); aspect-ratio: 1; transform: translate(-50%, -50%); }
 .circle-ring { position: absolute; top: 50%; left: 50%; width: var(--ring-size); aspect-ratio: 1; border: 2px solid var(--ring-color); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; }
@@ -130,6 +148,12 @@ h1 em { color: #7f9b2e; font-style: normal; }
   .map-panel { border-right: 0; }
   .workspace { min-height: 600px; flex: none; }
   .circle-map { min-height: 538px; }
+  .list-view { min-height: 538px; padding: 28px 20px; }
+  .list-view-header { align-items: start; flex-direction: column; gap: 8px; }
+  .directory-row { grid-template-columns: 42px minmax(0, 1fr) auto; gap: 11px; padding: 11px 5px; }
+  .directory-avatar { width: 42px; height: 42px; }
+  .directory-group { display: none; }
+  .main-badge { grid-column: 3; grid-row: 1; }
   .ring-stage { width: min(92%, calc(100vh - 170px)); }
   .add-person-button { padding: 7px 9px; }
   .add-person-button span { display: none; }

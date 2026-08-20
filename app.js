@@ -20,6 +20,9 @@ const personForm = document.querySelector("#person-form");
 const imageInput = document.querySelector("#person-image");
 const imageLabel = document.querySelector("#image-label");
 const formError = document.querySelector("#form-error");
+const listView = document.querySelector("#list-view");
+const peopleDirectory = document.querySelector("#people-directory");
+const listCount = document.querySelector("#list-count");
 const groupNames = ["Primary Groups", "Secondary Groups", "Reference Groups", "In Groups", "Out Groups", "Virtual Groups", "Gemeinschaft", "Gesellschaft"];
 const ringColors = ["#e8a49d", "#e9b47d", "#e6cb83", "#acd18e", "#9bcde0", "#c0a4d0", "#83b7d4", "#7695c3"];
 const storageKey = "social-circle-people-clean-slate-v1";
@@ -99,6 +102,29 @@ function render() {
     const face = node.querySelector(".person-face");
     node.style.setProperty("--face-half", `${face.offsetHeight / 2}px`);
     node.style.setProperty("--counter-rotation", `${-ringAngles[person.ring - 1] - person.orbitOffset}rad`);
+  });
+  renderList();
+}
+
+function renderList() {
+  peopleDirectory.replaceChildren();
+  listCount.textContent = `${people.length} ${people.length === 1 ? "person" : "people"}`;
+  if (!people.length) {
+    const empty = document.createElement("div");
+    empty.className = "list-empty";
+    empty.innerHTML = "<span class=\"list-empty-mark\">+</span><strong>Your circle is ready for its first person.</strong><span>Use Add person to begin building the map.</span>";
+    peopleDirectory.append(empty);
+    return;
+  }
+
+  people.forEach((person, index) => {
+    const row = document.createElement("button");
+    row.className = "directory-row";
+    row.type = "button";
+    row.dataset.personIndex = index;
+    row.innerHTML = `<span class="directory-avatar" style="background-color:${person.color}${person.image ? `;background-image:url('${person.image}')` : ""}">${person.initials}</span><span class="directory-main"><strong>${person.name}</strong><span>${person.role}</span></span><span class="directory-group">${groupNames[person.ring - 1]}</span>${person.main ? "<span class=\"main-badge\">Main</span>" : ""}`;
+    row.addEventListener("click", () => selectPerson(person));
+    peopleDirectory.append(row);
   });
 }
 
@@ -373,6 +399,9 @@ document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click",
     item.classList.toggle("is-active", item === tab);
     item.setAttribute("aria-selected", item === tab);
   });
+  const showList = tab.textContent.trim() === "List view";
+  listView.hidden = !showList;
+  map.hidden = showList;
 }));
 
 render();
