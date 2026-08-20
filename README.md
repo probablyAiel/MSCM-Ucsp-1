@@ -13,7 +13,7 @@ The map is intentionally personal, quiet, and a little playful. People orbit the
 - Shows eight relationship rings around `ME`
 - Animates people smoothly around their assigned rings
 - Supports multiple people in the same ring without replacing anyone
-- Automatically spaces multiple people around a shared ring with gentle, changing separation
+- Automatically spaces multiple people around a shared ring with gentle, changing separation; people drift around the ring while their names stay upright and readable
 - Connects `ME` to each ring's selected main person, or the closest person when no main person is set
 - Opens a focused profile card with a portrait, name, relationship, group, and personal explanation
 - Includes a List view directory of everyone in the map, with ring labels and main-person badges

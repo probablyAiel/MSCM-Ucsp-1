@@ -348,6 +348,17 @@ function rebalanceOrbitOffsets(delta, timestamp) {
   });
 }
 
+function updateOrbitVisuals() {
+  document.querySelectorAll(".person-node").forEach((node) => {
+    const person = people[Number(node.dataset.personIndex)];
+    if (!person) return;
+    const ringIndex = person.ring - 1;
+    const orbit = node.closest(".person-orbit");
+    orbit.style.setProperty("--orbit-offset", `${person.orbitOffset}rad`);
+    node.style.setProperty("--counter-rotation", `${-ringAngles[ringIndex] - person.orbitOffset}rad`);
+  });
+}
+
 let previousTimestamp = 0;
 
 function animatePeople(timestamp) {
@@ -375,6 +386,7 @@ function animatePeople(timestamp) {
   });
 
   rebalanceOrbitOffsets(delta, timestamp);
+  updateOrbitVisuals();
 
   updateConnections();
 
