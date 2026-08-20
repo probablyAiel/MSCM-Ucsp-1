@@ -47,7 +47,7 @@ h1 em { color: #7f9b2e; font-style: normal; }
 .icon-button { width: 31px; height: 31px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 19px; }
 .circle-map { position: relative; min-height: 638px; height: auto; flex: 1; overflow: hidden; background: #f7f7f2; }
 .map-grid { position: absolute; inset: 0; opacity: .35; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 46px 46px; mask-image: linear-gradient(to bottom, black, transparent 85%); }
-.ring-stage { position: absolute; top: 50%; left: 50%; z-index: 1; width: min(92%, calc(100vh - 190px)); aspect-ratio: 1; transform: translate(-50%, -50%); }
+.ring-stage { position: absolute; top: 50%; left: 50%; z-index: 2; width: min(92%, calc(100vh - 190px)); aspect-ratio: 1; transform: translate(-50%, -50%); }
 .circle-ring { position: absolute; top: 50%; left: 50%; width: var(--ring-size); aspect-ratio: 1; border: 2px solid var(--ring-color); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 .circle-ring > span { position: absolute; top: 3px; left: 50%; padding: 2px 7px; background: rgba(247, 247, 242, .9); color: var(--ring-color); font: 9px "DM Mono", monospace; letter-spacing: .2px; text-transform: uppercase; white-space: nowrap; transform: translateX(-50%); }
 .ring-track { position: absolute; inset: 0; transform-origin: center; will-change: transform; pointer-events: none; }
