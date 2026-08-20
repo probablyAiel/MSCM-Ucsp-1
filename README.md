@@ -1,34 +1,45 @@
 # My Social Circle Map
 
-A dependency-free interactive social circle map for visualizing different kinds of relationships and groups.
+> A small, moving portrait of the people, places, and relationships that shape a life.
+
+My Social Circle Map is a visual school project about seeing relationships as a living system rather than a flat list. Eight pastel rings create a path from the people closest to me to the wider social structures around me:
+
+**Primary Groups** -> **Secondary Groups** -> **Reference Groups** -> **In Groups** -> **Out Groups** -> **Virtual Groups** -> **Gemeinschaft** -> **Gesellschaft**
+
+The map is intentionally personal, quiet, and a little playful. People orbit their place in the circle, connectors find the main person for each group, and every profile can carry its own image and explanation.
+
+## What it does
+
+- Shows eight relationship rings around `ME`
+- Animates people smoothly around their assigned rings
+- Supports multiple people in the same ring without replacing anyone
+- Connects `ME` to each ring's selected main person, or the closest person when no main person is set
+- Opens a focused profile card with a portrait, name, relationship, group, and personal explanation
+- Adds new people through a password-gated form
+- Supports ring selection, main-person selection, personal notes, and portrait uploads
+- Saves added people in browser local storage for the current device
+- Works as a responsive static website on desktop and mobile
 
 ## Run locally
 
-Open `index.html` in a browser, or serve the folder with any static file server:
+Open `index.html` directly, or start a tiny local server:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-Then visit http://localhost:8000.
+Then open http://localhost:8000.
 
-## Current features
+## Add people
 
-- Eight pastel relationship rings, ordered from Primary Groups to Gesellschaft
-- Pre-existing people orbiting their assigned rings with smooth variable-speed motion
-- Live connectors from `ME` to the closest person in each ring
-- Add-person form with ring assignment, main-person connector selection, notes, and local portrait uploads
-- Clickable people with a focused ring and an information card containing their portrait, relationship, group, and context
-- Responsive layout for desktop and mobile screens
+Click **Add person** and enter the workspace password when prompted. The current password is `2010`.
 
-## GitHub Pages preview
+The password is a front-end project gate, not real security. Anyone who can inspect the website source can find it. Real privacy would require a server-side authentication system.
 
-Every push to `main` automatically deploys the site through GitHub Actions. Once the first workflow run completes, the public preview is available at:
+## GitHub Pages
 
-https://bensaccountidk.github.io/MSCM-Ucsp-1/
+Every push to `main` deploys automatically through GitHub Actions.
 
-The current prototype is a static client-side experience. People added through the form are saved in the browser's local storage; there is no shared backend yet.
+Live preview: https://bensaccountidk.github.io/MSCM-Ucsp-1/
 
-## Deployment
-
-Every push to `main` automatically deploys the site through GitHub Actions using `.github/workflows/deploy-pages.yml`.
+Deployment workflow: `.github/workflows/deploy-pages.yml`

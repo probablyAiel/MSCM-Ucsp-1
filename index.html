@@ -126,6 +126,23 @@
     </form>
   </div>
 
-  <script src="app.js?v=11"></script>
+  <div class="person-dialog password-dialog" id="password-dialog" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="password-title">
+    <form id="password-form">
+      <button class="dialog-close" id="password-close" type="button" aria-label="Close password prompt">×</button>
+      <p class="eyebrow">Private workspace</p>
+      <h2 id="password-title">Unlock your circle</h2>
+      <p class="password-copy">Add a new person only when you are ready to make room in the map.</p>
+      <label class="form-field">Password
+        <input id="add-password" type="password" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="4 digits" required />
+      </label>
+      <p class="form-error" id="password-error" role="alert"></p>
+      <div class="dialog-actions">
+        <button class="text-button" id="password-cancel" type="button">Cancel</button>
+        <button class="primary-button" type="submit">Continue</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="app.js?v=12"></script>
 </body>
 </html>

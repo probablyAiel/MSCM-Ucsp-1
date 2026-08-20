@@ -1,13 +1,4 @@
-const defaultPeople = [
-  { name: "Maya Chen", role: "Close friend", initials: "MC", color: "#e8a49d", ring: 1, image: "https://i.pravatar.cc/480?img=47", note: "Maya is in my primary group because she is one of the people I trust with the everyday parts of life.", angle: 0.4, direction: 1, speed: 0.0003, targetSpeed: 0.0003, nextChange: 0 },
-  { name: "Noah Williams", role: "Family", initials: "NW", color: "#e9b47d", ring: 2, image: "https://i.pravatar.cc/480?img=12", note: "Noah is part of my secondary group: close enough to matter, with a bond shaped by family and shared history.", angle: 2.4, direction: -1, speed: 0.0004, targetSpeed: 0.0004, nextChange: 0 },
-  { name: "Ari Rivera", role: "Work friend", initials: "AR", color: "#e6cb83", ring: 3, image: "https://i.pravatar.cc/480?img=32", note: "Ari belongs here because their perspective influences how I think, work, and grow.", angle: 4.1, direction: 1, speed: 0.0002, targetSpeed: 0.0002, nextChange: 0 },
-  { name: "Sam Okafor", role: "Mentor", initials: "SO", color: "#acd18e", ring: 4, image: "https://i.pravatar.cc/480?img=68", note: "Sam is in my in-group because we share values, trust, and a sense of belonging.", angle: 1.2, direction: -1, speed: 0.0005, targetSpeed: 0.0005, nextChange: 0 },
-  { name: "Lena Park", role: "Friend", initials: "LP", color: "#9bcde0", ring: 5, image: "https://i.pravatar.cc/480?img=25", note: "Lena is in my out-group: still part of my wider social world, but not part of my closest everyday circle.", angle: 3.2, direction: 1, speed: 0.00035, targetSpeed: 0.00035, nextChange: 0 },
-  { name: "Theo Martin", role: "Neighbor", initials: "TM", color: "#c0a4d0", ring: 6, image: "https://i.pravatar.cc/480?img=59", note: "Theo is in my virtual group because most of our connection and conversations happen through screens.", angle: 5.1, direction: -1, speed: 0.00025, targetSpeed: 0.00025, nextChange: 0 },
-  { name: "Priya Shah", role: "Classmate", initials: "PS", color: "#83b7d4", ring: 7, image: "https://i.pravatar.cc/480?img=44", note: "Priya represents Gemeinschaft: a connection grounded in familiarity, community, and shared belonging.", angle: 0.9, direction: 1, speed: 0.00045, targetSpeed: 0.00045, nextChange: 0 },
-  { name: "Eli Brooks", role: "Acquaintance", initials: "EB", color: "#7695c3", ring: 8, image: "https://i.pravatar.cc/480?img=11", note: "Eli represents Gesellschaft: a social connection shaped by context, roles, and the wider structure around us.", angle: 3.8, direction: -1, speed: 0.0003, targetSpeed: 0.0003, nextChange: 0 }
-];
+const defaultPeople = [];
 
 const map = document.querySelector("#circle-map");
 const ringTracks = [...document.querySelectorAll(".ring-track")];
@@ -21,13 +12,17 @@ const cardRole = document.querySelector("#card-role");
 const cardGroup = document.querySelector("#card-group");
 const cardNote = document.querySelector("#card-note");
 const personDialog = document.querySelector("#person-dialog");
+const passwordDialog = document.querySelector("#password-dialog");
+const passwordForm = document.querySelector("#password-form");
+const passwordInput = document.querySelector("#add-password");
+const passwordError = document.querySelector("#password-error");
 const personForm = document.querySelector("#person-form");
 const imageInput = document.querySelector("#person-image");
 const imageLabel = document.querySelector("#image-label");
 const formError = document.querySelector("#form-error");
 const groupNames = ["Primary Groups", "Secondary Groups", "Reference Groups", "In Groups", "Out Groups", "Virtual Groups", "Gemeinschaft", "Gesellschaft"];
 const ringColors = ["#e8a49d", "#e9b47d", "#e6cb83", "#acd18e", "#9bcde0", "#c0a4d0", "#83b7d4", "#7695c3"];
-const storageKey = "social-circle-people";
+const storageKey = "social-circle-people-clean-slate-v1";
 let people = loadPeople();
 let isPaused = false;
 let pendingPerson = null;
@@ -61,9 +56,24 @@ function openPersonDialog() {
   document.querySelector("#person-full-name").focus();
 }
 
+function openPasswordDialog() {
+  passwordError.textContent = "";
+  passwordInput.value = "";
+  passwordDialog.classList.add("is-open");
+  passwordDialog.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+  passwordInput.focus();
+}
+
 function closePersonDialog() {
   personDialog.classList.remove("is-open");
   personDialog.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("modal-open");
+}
+
+function closePasswordDialog() {
+  passwordDialog.classList.remove("is-open");
+  passwordDialog.setAttribute("aria-hidden", "true");
   document.body.classList.remove("modal-open");
 }
 
@@ -280,6 +290,17 @@ async function addPerson(event) {
   }
 }
 
+function unlockAddPerson(event) {
+  event.preventDefault();
+  if (passwordInput.value !== "2010") {
+    passwordError.textContent = "That password does not unlock this workspace.";
+    passwordInput.select();
+    return;
+  }
+  closePasswordDialog();
+  openPersonDialog();
+}
+
 function randomSpeed() {
   return 0.00015 + Math.random() * 0.0005;
 }
@@ -322,14 +343,22 @@ document.querySelector("#reset-map").addEventListener("click", () => {
   render();
 });
 cardClose.addEventListener("click", closePersonCard);
-document.querySelector("#add-person-button").addEventListener("click", openPersonDialog);
+document.querySelector("#add-person-button").addEventListener("click", openPasswordDialog);
 document.querySelector("#dialog-close").addEventListener("click", closePersonDialog);
 document.querySelector("#cancel-person").addEventListener("click", closePersonDialog);
+document.querySelector("#password-close").addEventListener("click", closePasswordDialog);
+document.querySelector("#password-cancel").addEventListener("click", closePasswordDialog);
+passwordForm.addEventListener("submit", unlockAddPerson);
 personDialog.addEventListener("click", (event) => {
   if (event.target === personDialog) closePersonDialog();
 });
+passwordDialog.addEventListener("click", (event) => {
+  if (event.target === passwordDialog) closePasswordDialog();
+});
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && personDialog.classList.contains("is-open")) closePersonDialog();
+  if (event.key !== "Escape") return;
+  if (passwordDialog.classList.contains("is-open")) closePasswordDialog();
+  if (personDialog.classList.contains("is-open")) closePersonDialog();
 });
 imageInput.addEventListener("change", () => {
   imageLabel.textContent = imageInput.files[0]?.name || "Add a portrait";
