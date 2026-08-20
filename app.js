@@ -23,6 +23,7 @@ const formError = document.querySelector("#form-error");
 const listView = document.querySelector("#list-view");
 const peopleDirectory = document.querySelector("#people-directory");
 const listCount = document.querySelector("#list-count");
+const mapPanel = document.querySelector("#map-panel");
 const groupNames = ["Primary Groups", "Secondary Groups", "Reference Groups", "In Groups", "Out Groups", "Virtual Groups", "Gemeinschaft", "Gesellschaft"];
 const ringColors = ["#e8a49d", "#e9b47d", "#e6cb83", "#acd18e", "#9bcde0", "#c0a4d0", "#83b7d4", "#7695c3"];
 const storageKey = "social-circle-people-clean-slate-v1";
@@ -36,6 +37,7 @@ const ringNextChanges = groupNames.map(() => 0);
 
 people.forEach((person) => {
   if (typeof person.orbitOffset !== "number") person.orbitOffset = 0;
+  if (typeof person.wobblePhase !== "number") person.wobblePhase = Math.random() * Math.PI * 2;
 });
 
 function loadPeople() {
@@ -137,18 +139,16 @@ function selectPerson(person) {
     item.nextChange = Infinity;
   });
   const ringIndex = person.ring - 1;
-  const targetRingAngle = -person.orbitOffset;
-  const shortestTurn = Math.atan2(Math.sin(targetRingAngle - ringAngles[ringIndex]), Math.cos(targetRingAngle - ringAngles[ringIndex]));
-  ringAngles[ringIndex] += shortestTurn;
+  const targetOffset = -ringAngles[ringIndex];
+  const shortestTurn = Math.atan2(Math.sin(targetOffset - person.orbitOffset), Math.cos(targetOffset - person.orbitOffset));
+  person.orbitOffset += shortestTurn;
   ringTracks.forEach((track) => track.classList.remove("is-focused"));
   ringTracks[ringIndex].classList.add("is-focused");
-  ringTracks[ringIndex].style.transform = `rotate(${ringAngles[ringIndex]}rad)`;
   document.querySelectorAll(".person-node").forEach((node) => node.classList.toggle("is-selected", node.dataset.personIndex === String(people.indexOf(person))));
-  document.querySelectorAll(`.person-node[data-ring="${person.ring}"]`).forEach((node) => {
-    const owner = people[Number(node.dataset.personIndex)];
-    node.style.setProperty("--counter-rotation", `${-ringAngles[ringIndex] - owner.orbitOffset}rad`);
-  });
   const selectedNode = ringTracks[ringIndex].querySelector(`[data-person-index="${people.indexOf(person)}"]`);
+  const selectedOrbit = selectedNode.closest(".person-orbit");
+  selectedOrbit.style.setProperty("--orbit-offset", `${person.orbitOffset}rad`);
+  selectedOrbit.classList.add("is-focused-orbit");
   const focusedTrack = ringTracks[ringIndex];
   const revealCard = () => {
     if (pendingPerson !== person) return;
@@ -187,6 +187,7 @@ function closePersonCard() {
   personCard.setAttribute("aria-hidden", "true");
   ringTracks.forEach((track) => track.classList.remove("is-focused"));
   document.querySelectorAll(".person-node").forEach((node) => node.classList.remove("is-selected"));
+  document.querySelectorAll(".person-orbit").forEach((orbit) => orbit.classList.remove("is-focused-orbit"));
   people.forEach((item) => {
     item.nextChange = 0;
   });
@@ -304,7 +305,8 @@ async function addPerson(event) {
       direction: Math.random() > .5 ? 1 : -1,
       speed: 0.0003,
       targetSpeed: 0.0003,
-      nextChange: 0
+      nextChange: 0,
+      wobblePhase: Math.random() * Math.PI * 2
     });
     savePeople();
     render();
@@ -329,6 +331,21 @@ function unlockAddPerson(event) {
 
 function randomSpeed() {
   return 0.00015 + Math.random() * 0.0005;
+}
+
+function rebalanceOrbitOffsets(delta, timestamp) {
+  groupNames.forEach((_, ringIndex) => {
+    const members = people.filter((person) => person.ring === ringIndex + 1);
+    if (members.length < 2) return;
+    const easing = 1 - Math.exp(-delta / 1800);
+    members.forEach((person, memberIndex) => {
+      const baseOffset = (memberIndex / members.length) * Math.PI * 2;
+      const wobble = Math.sin(timestamp / 1100 + person.wobblePhase) * 0.08;
+      const targetOffset = baseOffset + wobble;
+      const correction = Math.atan2(Math.sin(targetOffset - person.orbitOffset), Math.cos(targetOffset - person.orbitOffset));
+      person.orbitOffset += correction * easing;
+    });
+  });
 }
 
 let previousTimestamp = 0;
@@ -356,6 +373,8 @@ function animatePeople(timestamp) {
       node.style.setProperty("--counter-rotation", `${-ringAngles[ringIndex] - owner.orbitOffset}rad`);
     });
   });
+
+  rebalanceOrbitOffsets(delta, timestamp);
 
   updateConnections();
 
@@ -402,6 +421,7 @@ document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click",
   const showList = tab.textContent.trim() === "List view";
   listView.hidden = !showList;
   map.hidden = showList;
+  mapPanel.classList.toggle("list-view-active", showList);
 }));
 
 render();
