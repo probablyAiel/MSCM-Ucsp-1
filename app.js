@@ -119,15 +119,44 @@ function renderList() {
     return;
   }
 
-  people.forEach((person, index) => {
-    const row = document.createElement("button");
-    row.className = "directory-row";
-    row.type = "button";
-    row.dataset.personIndex = index;
-    row.innerHTML = `<span class="directory-avatar" style="background-color:${person.color}${person.image ? `;background-image:url('${person.image}')` : ""}">${person.initials}</span><span class="directory-main"><strong>${person.name}</strong><span>${person.role}</span></span><span class="directory-group">${groupNames[person.ring - 1]}</span>${person.main ? "<span class=\"main-badge\">Main</span>" : ""}`;
-    row.addEventListener("click", () => selectPerson(person));
-    peopleDirectory.append(row);
+  groupNames.forEach((groupName, ringIndex) => {
+    const members = people.filter((person) => person.ring === ringIndex + 1);
+    if (!members.length) return;
+    const details = document.createElement("details");
+    details.className = "directory-group-section";
+    details.open = true;
+    const summary = document.createElement("summary");
+    summary.innerHTML = `<span class="group-dot" style="background:${ringColors[ringIndex]}"></span><span>${groupName}</span><small>${members.length} ${members.length === 1 ? "person" : "people"}</small>`;
+    details.append(summary);
+    const cards = document.createElement("div");
+    cards.className = "directory-cards";
+    members.forEach((person) => {
+      const card = document.createElement("button");
+      card.className = "directory-card";
+      card.type = "button";
+      card.innerHTML = `<span class="directory-avatar" style="background-color:${person.color}${person.image ? `;background-image:url('${person.image}')` : ""}">${person.initials}</span><span class="directory-main"><strong>${person.name}</strong><span>${person.role}</span></span><span class="directory-note">${person.note}</span>${person.main ? "<span class=\"main-badge\">Main connector</span>" : ""}`;
+      card.addEventListener("click", () => {
+        peopleDirectory.querySelectorAll(".directory-card").forEach((item) => item.classList.remove("is-active"));
+        card.classList.add("is-active");
+      });
+      cards.append(card);
+    });
+    details.append(cards);
+    peopleDirectory.append(details);
   });
+}
+
+function showPersonCard(person) {
+  pendingPerson = person;
+  cardPortrait.src = person.image;
+  cardPortrait.alt = `${person.name} portrait`;
+  cardPortrait.style.backgroundColor = person.color;
+  cardName.textContent = person.name;
+  cardRole.textContent = person.role;
+  cardGroup.textContent = groupNames[person.ring - 1];
+  cardNote.textContent = person.note;
+  personCard.classList.add("is-visible");
+  personCard.setAttribute("aria-hidden", "false");
 }
 
 function selectPerson(person) {
@@ -152,15 +181,7 @@ function selectPerson(person) {
   const focusedTrack = ringTracks[ringIndex];
   const revealCard = () => {
     if (pendingPerson !== person) return;
-    cardPortrait.src = person.image;
-    cardPortrait.alt = `${person.name} portrait`;
-    cardPortrait.style.backgroundColor = person.color;
-    cardName.textContent = person.name;
-    cardRole.textContent = person.role;
-    cardGroup.textContent = groupNames[person.ring - 1];
-    cardNote.textContent = person.note;
-    personCard.classList.add("is-visible");
-    personCard.setAttribute("aria-hidden", "false");
+    showPersonCard(person);
     requestAnimationFrame(() => positionPersonCard(selectedNode));
   };
   focusedTrack.addEventListener("transitionend", revealCard, { once: true });

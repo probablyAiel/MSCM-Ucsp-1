@@ -58,6 +58,23 @@ h1 em { color: #7f9b2e; font-style: normal; }
 .list-view-header h2 { margin: 0; font-size: 28px; letter-spacing: -1.2px; }
 .list-count { color: var(--muted); font: 10px "DM Mono", monospace; text-transform: uppercase; }
 .people-directory { display: grid; gap: 8px; padding-top: 15px; }
+.directory-group-section { border-bottom: 1px solid var(--line); }
+.directory-group-section summary { display: grid; grid-template-columns: 10px 1fr auto; align-items: center; gap: 10px; padding: 16px 4px 12px; cursor: pointer; list-style: none; color: var(--ink); font-size: 12px; font-weight: 800; }
+.directory-group-section summary::-webkit-details-marker { display: none; }
+.directory-group-section summary::after { content: "+"; color: var(--muted); font: 18px "DM Mono", monospace; }
+.directory-group-section[open] summary::after { content: "-"; }
+.group-dot { width: 9px; height: 9px; border-radius: 50%; }
+.directory-group-section summary small { color: var(--muted); font: 9px "DM Mono", monospace; text-transform: uppercase; }
+.directory-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; padding: 2px 0 17px 19px; }
+.directory-card { display: grid; grid-template-columns: 44px 1fr; gap: 11px; min-height: 84px; padding: 12px; border: 1px solid var(--line); background: #fbfbf8; color: var(--ink); text-align: left; transition: border-color .2s ease, background .2s ease, transform .2s ease; }
+.directory-card:hover { border-color: var(--coral); background: white; transform: translateY(-2px); }
+.directory-card.is-active { border-color: var(--ink); box-shadow: 0 0 0 2px var(--lime) inset; }
+.directory-card .directory-avatar { width: 44px; height: 44px; }
+.directory-card .directory-main { min-width: 0; }
+.directory-card .directory-main strong { display: block; margin-bottom: 3px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.directory-card .directory-main span { display: block; color: var(--muted); font: 9px "DM Mono", monospace; text-transform: uppercase; }
+.directory-note { grid-column: 1 / -1; display: -webkit-box; overflow: hidden; color: var(--muted); font-size: 10px; line-height: 1.45; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.directory-card .main-badge { grid-column: 1 / -1; width: fit-content; }
 .directory-row { display: grid; grid-template-columns: 48px minmax(160px, 1fr) minmax(130px, .7fr) auto; align-items: center; gap: 16px; width: 100%; padding: 12px 14px; border: 1px solid transparent; border-bottom-color: var(--line); background: transparent; color: var(--ink); text-align: left; transition: border-color .2s ease, background .2s ease, transform .2s ease; }
 .directory-row:hover { border-color: var(--line); background: white; transform: translateX(3px); }
 .directory-avatar { display: grid; width: 48px; height: 48px; place-items: center; border: 3px solid #f7f7f2; border-radius: 50%; outline: 1px solid #b8bcb0; background-position: center; background-size: cover; font-size: 12px; font-weight: 800; }
@@ -157,6 +174,7 @@ h1 em { color: #7f9b2e; font-style: normal; }
   .directory-avatar { width: 42px; height: 42px; }
   .directory-group { display: none; }
   .main-badge { grid-column: 3; grid-row: 1; }
+  .directory-cards { grid-template-columns: 1fr; padding-left: 8px; }
   .ring-stage { width: min(92%, calc(100vh - 170px)); }
   .add-person-button { padding: 7px 9px; }
   .add-person-button span { display: none; }
