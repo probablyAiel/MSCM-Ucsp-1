@@ -1,6 +1,6 @@
-# Social Circle
+# My Social Circle Map
 
-A dependency-free starter for an interactive social connection map.
+A dependency-free interactive social circle map for visualizing different kinds of relationships and groups.
 
 ## Run locally
 
@@ -12,10 +12,22 @@ python3 -m http.server 8000
 
 Then visit http://localhost:8000.
 
+## Current features
+
+- Eight pastel relationship rings, ordered from Primary Groups to Gesellschaft
+- Pre-existing people orbiting their assigned rings with smooth variable-speed motion
+- Live connectors from `ME` to the closest person in each ring
+- Clickable people with a focused ring and an information card containing their portrait, relationship, group, and context
+- Responsive layout for desktop and mobile screens
+
 ## GitHub Pages preview
 
 Every push to `main` automatically deploys the site through GitHub Actions. Once the first workflow run completes, the public preview is available at:
 
 https://bensaccountidk.github.io/MSCM-Ucsp-1/
 
-The current prototype supports dragging people around the map, adding connections, resetting positions, and finding someone to check in with. Data is local to the current page session.
+The current prototype is a static client-side experience. People, ring assignments, portraits, and explanations are defined in `app.js`; there is no backend or persistent data store yet.
+
+## Deployment
+
+Every push to `main` automatically deploys the site through GitHub Actions using `.github/workflows/deploy-pages.yml`.
