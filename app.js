@@ -29,10 +29,10 @@ function render() {
   ringTracks.forEach((track) => track.replaceChildren());
 
   people.forEach((person, index) => {
-      const node = document.createElement("button");
+    const node = document.createElement("button");
     node.className = "person-node";
-      node.type = "button";
-      node.setAttribute("aria-label", `Show information about ${person.name}`);
+    node.type = "button";
+    node.setAttribute("aria-label", `Show information about ${person.name}`);
     node.dataset.ring = person.ring;
     node.dataset.personIndex = index;
     node.innerHTML = `<span class="person-face" style="background:${person.color}">${person.initials}</span><span class="person-name">${person.name}</span><span class="person-role">${person.role}</span>`;
@@ -51,12 +51,14 @@ function selectPerson(person) {
   people.forEach((item) => {
     item.nextChange = Infinity;
   });
-  person.angle = 0;
+  const shortestTurn = Math.atan2(Math.sin(-person.angle), Math.cos(-person.angle));
+  person.angle += shortestTurn;
   ringTracks.forEach((track) => track.classList.remove("is-focused"));
   ringTracks[person.ring - 1].classList.add("is-focused");
-  ringTracks[person.ring - 1].style.transform = "rotate(0rad)";
+  ringTracks[person.ring - 1].style.transform = `rotate(${person.angle}rad)`;
   document.querySelectorAll(".person-node").forEach((node) => node.classList.toggle("is-selected", node.dataset.ring === String(person.ring)));
   const selectedNode = ringTracks[person.ring - 1].querySelector(".person-node");
+  selectedNode.style.setProperty("--counter-rotation", `${-person.angle}rad`);
   const focusedTrack = ringTracks[person.ring - 1];
   const revealCard = () => {
     if (pendingPerson !== person) return;
@@ -134,7 +136,11 @@ function updateConnections() {
       const distance = Math.hypot(faceX - originX, faceY - originY);
       if (distance < closestDistance) {
         closestDistance = distance;
-        closestNode = { x: faceX, y: faceY };
+        closestNode = {
+          x: faceX,
+          y: faceY,
+          color: getComputedStyle(node.closest(".circle-ring")).getPropertyValue("--ring-color").trim()
+        };
       }
     });
 
@@ -148,6 +154,7 @@ function updateConnections() {
     line.style.top = `${originY - mapBounds.top}px`;
     line.style.width = `${Math.hypot(deltaX, deltaY)}px`;
     line.style.transform = `rotate(${Math.atan2(deltaY, deltaX)}rad)`;
+    line.style.backgroundColor = closestNode.color;
   });
 }
 
@@ -171,6 +178,8 @@ function animatePeople(timestamp) {
     person.angle += person.speed * delta * person.direction;
 
     ringTracks[index].style.transform = `rotate(${person.angle}rad)`;
+    const node = document.querySelector(`.person-node[data-person-index="${index}"]`);
+    if (node) node.style.setProperty("--counter-rotation", `${-person.angle}rad`);
   });
 
   updateConnections();
