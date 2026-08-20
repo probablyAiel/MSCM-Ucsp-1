@@ -67,7 +67,7 @@ h1 em { color: #7f9b2e; font-style: normal; }
 .you-initials::after { content: ""; position: absolute; bottom: 14px; left: 50%; width: 19px; height: 9px; border-bottom: 2px solid var(--lime); border-radius: 0 0 50% 50%; transform: translateX(-50%); }
 .you-label { margin-top: 10px; font: 10px "DM Mono", monospace; text-transform: uppercase; }
 .people-layer { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
-.person-node { gap: 8px; transform: translate(-50%, -50%); pointer-events: none; }
+.person-node { top: 50%; left: 50%; gap: 8px; transform: translate(-50%, -50%); pointer-events: none; will-change: transform; }
 .person-face { display: grid; width: 48px; height: 48px; place-items: center; border: 3px solid #f7f7f2; border-radius: 50%; outline: 1px solid #b8bcb0; color: var(--ink); font-size: 12px; font-weight: 800; }
 .person-name { font-size: 11px; font-weight: 800; white-space: nowrap; }
 .person-role { color: var(--muted); font: 9px "DM Mono", monospace; text-transform: uppercase; }

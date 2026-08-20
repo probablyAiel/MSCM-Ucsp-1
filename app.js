@@ -25,6 +25,11 @@ function render() {
     node.dataset.ring = person.ring;
     node.innerHTML = `<span class="person-face" style="background:${person.color}">${person.initials}</span><span class="person-name">${person.name}</span><span class="person-role">${person.role}</span>`;
     peopleLayer.append(node);
+
+    const face = node.querySelector(".person-face");
+    const faceCenter = face.offsetHeight / 2;
+    const nodeCenter = node.offsetHeight / 2;
+    node.style.setProperty("--face-anchor", `${nodeCenter - faceCenter}px`);
   });
 }
 
@@ -32,19 +37,27 @@ function randomSpeed() {
   return 0.00015 + Math.random() * 0.0005;
 }
 
+let previousTimestamp = 0;
+
 function animatePeople(timestamp) {
+  const delta = previousTimestamp ? Math.min(timestamp - previousTimestamp, 32) : 16;
+  previousTimestamp = timestamp;
+  const stageSize = ringStage.getBoundingClientRect().width;
+
   people.forEach((person, index) => {
     if (timestamp >= person.nextChange) {
       person.targetSpeed = randomSpeed();
       person.nextChange = timestamp + 1400 + Math.random() * 2800;
     }
-    person.speed += (person.targetSpeed - person.speed) * 0.012;
-    person.angle += person.speed * person.direction;
+    const smoothing = 1 - Math.exp(-delta / 900);
+    person.speed += (person.targetSpeed - person.speed) * smoothing;
+    person.angle += person.speed * delta * person.direction;
 
-    const radius = ringSizes[person.ring - 1] / 2;
+    const radius = stageSize * (ringSizes[person.ring - 1] / 100) / 2;
     const node = peopleLayer.children[index];
-    node.style.left = `${50 + Math.cos(person.angle) * radius}%`;
-    node.style.top = `${50 + Math.sin(person.angle) * radius}%`;
+    const x = Math.cos(person.angle) * radius;
+    const y = Math.sin(person.angle) * radius;
+    node.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), 0) translateY(calc(-1 * var(--face-anchor)))`;
   });
 
   requestAnimationFrame(animatePeople);
