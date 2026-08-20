@@ -341,7 +341,7 @@ async function addPerson(event) {
 
 function unlockAddPerson(event) {
   event.preventDefault();
-  if (passwordInput.value !== "2010") {
+  if (passwordInput.value !== "born") {
     passwordError.textContent = "That password does not unlock this workspace.";
     passwordInput.select();
     return;

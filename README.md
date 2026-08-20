@@ -36,7 +36,7 @@ Then open http://localhost:8000.
 
 ## Add people
 
-Click **Add person** and enter the workspace password when prompted. The current password is `2010`.
+Click **Add person** and enter the workspace password when prompted. The current password is `born`.
 
 The password is a front-end project gate, not real security. Anyone who can inspect the website source can find it. Real privacy would require a server-side authentication system.
 
