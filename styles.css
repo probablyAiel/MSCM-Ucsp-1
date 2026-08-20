@@ -17,7 +17,7 @@ html { min-width: 320px; }
 body { margin: 0; color: var(--ink); background: var(--paper); font-family: "Manrope", sans-serif; }
 button, input { font: inherit; }
 button { cursor: pointer; }
-.app-shell { width: min(1240px, calc(100% - 64px)); margin: 0 auto; }
+.app-shell { display: flex; width: min(1240px, calc(100% - 64px)); min-height: calc(100vh - 24px); margin: 0 auto; padding-bottom: 24px; flex-direction: column; }
 .topbar { height: 86px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--line); }
 .brand { display: inline-flex; align-items: center; gap: 14px; color: var(--ink); font-size: 21px; font-weight: 800; letter-spacing: -.8px; text-decoration: none; }
 .brand-mark { position: relative; width: 28px; height: 24px; display: inline-block; }
@@ -25,7 +25,7 @@ button { cursor: pointer; }
 .brand-mark i:nth-child(1) { left: 9px; top: 0; background: var(--lime); }
 .brand-mark i:nth-child(2) { left: 0; bottom: 1px; background: var(--coral); }
 .brand-mark i:nth-child(3) { right: 0; bottom: 1px; background: var(--blue); }
-.intro { display: flex; align-items: end; justify-content: space-between; gap: 30px; padding: 68px 0 52px; }
+.intro { display: flex; align-items: end; justify-content: space-between; gap: 30px; padding: 52px 0 28px; }
 .eyebrow { margin: 0 0 12px; color: #9a5b48; font: 11px "DM Mono", monospace; letter-spacing: 1.3px; text-transform: uppercase; }
 .eyebrow strong { color: var(--ink); font-family: "Manrope", sans-serif; font-size: 13px; letter-spacing: -.2px; text-transform: none; }
 h1, h2, p { margin-top: 0; }
@@ -36,15 +36,15 @@ h1 em { color: #7f9b2e; font-style: normal; }
 .primary-button { padding: 14px 19px; background: var(--ink); color: white; }
 .primary-button span { margin-right: 7px; color: var(--lime); font-size: 18px; line-height: 0; vertical-align: -1px; }
 .primary-button:hover, .secondary-button:hover { transform: translateY(-2px); }
-.workspace { display: grid; grid-template-columns: minmax(0, 1fr); min-height: 700px; background: var(--panel); box-shadow: var(--shadow); }
-.map-panel { min-width: 0; }
+.workspace { display: grid; grid-template-columns: minmax(0, 1fr); min-height: 0; flex: 1; background: var(--panel); box-shadow: var(--shadow); }
+.map-panel { display: flex; min-width: 0; flex-direction: column; }
 .map-toolbar { height: 62px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; border-bottom: 1px solid var(--line); }
 .view-tabs { display: flex; gap: 24px; height: 100%; }
 .tab { position: relative; border: 0; padding: 0; background: transparent; color: var(--muted); font-size: 12px; }
 .tab.is-active { color: var(--ink); font-weight: 700; }
 .tab.is-active::after { content: ""; position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: var(--ink); }
 .icon-button { width: 31px; height: 31px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 19px; }
-.circle-map { position: relative; min-height: 638px; height: calc(100% - 62px); overflow: hidden; background: #f7f7f2; }
+.circle-map { position: relative; min-height: 638px; height: auto; flex: 1; overflow: hidden; background: #f7f7f2; }
 .map-grid { position: absolute; inset: 0; opacity: .35; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 46px 46px; mask-image: linear-gradient(to bottom, black, transparent 85%); }
 .orbit { position: absolute; top: 50%; left: 50%; border: 1px solid #d9dbd2; border-radius: 50%; transform: translate(-50%, -50%); }
 .orbit-inner { width: 42%; aspect-ratio: 1; }
@@ -72,7 +72,7 @@ h1 em { color: #7f9b2e; font-style: normal; }
   h1 { letter-spacing: -2px; white-space: normal; }
   .workspace { display: block; }
   .map-panel { border-right: 0; }
-  .workspace { min-height: 600px; }
+  .workspace { min-height: 600px; flex: none; }
   .circle-map { min-height: 538px; }
   .orbit-inner { width: 54%; }
   .orbit-outer { width: 90%; }
