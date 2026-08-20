@@ -21,11 +21,10 @@
 
     <section class="intro" aria-labelledby="page-title">
       <div>
-        <p class="eyebrow">Your people, at a glance</p>
+        <p class="eyebrow">I am <strong>Franzes Aiel R. Opiniano</strong>, and this is</p>
         <h1 id="page-title">A living map of <em>your circle.</em></h1>
         <p class="intro-copy">Keep the people who matter close. Drag someone around the map, or add a new connection to get started.</p>
       </div>
-      <button class="primary-button" id="add-person-button" type="button"><span aria-hidden="true">+</span> Add person</button>
     </section>
 
     <section class="workspace" aria-label="Social circle workspace">
@@ -71,21 +70,6 @@
     <footer class="footer"><span>Made for meaningful connections.</span><span class="footer-mono">v0.1 / local only</span></footer>
   </main>
 
-  <dialog class="add-dialog" id="add-dialog">
-    <form method="dialog" id="add-form">
-      <button class="dialog-close" value="cancel" aria-label="Close dialog">×</button>
-      <p class="eyebrow">New connection</p>
-      <h2>Add someone to your circle</h2>
-      <label for="person-name">Name</label>
-      <input id="person-name" name="name" type="text" placeholder="e.g. Maya Chen" maxlength="28" required />
-      <label for="person-role">Relationship</label>
-      <input id="person-role" name="role" type="text" placeholder="e.g. Friend, mentor, family" maxlength="32" required />
-      <div class="dialog-actions">
-        <button class="text-button" value="cancel" type="button" id="cancel-dialog">Cancel</button>
-        <button class="primary-button" value="default" type="submit">Add person</button>
-      </div>
-    </form>
-  </dialog>
   <script src="app.js"></script>
 </body>
 </html>

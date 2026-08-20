@@ -11,9 +11,6 @@ const map = document.querySelector("#circle-map");
 const peopleLayer = document.querySelector("#people-layer");
 const peopleList = document.querySelector("#people-list");
 const peopleCount = document.querySelector("#people-count");
-const dialog = document.querySelector("#add-dialog");
-const form = document.querySelector("#add-form");
-const nameInput = document.querySelector("#person-name");
 let people = [...defaultPeople];
 
 function render() {
@@ -58,21 +55,6 @@ function makeDraggable(node, person) {
   });
 }
 
-document.querySelector("#add-person-button").addEventListener("click", () => {
-  dialog.showModal();
-  nameInput.focus();
-});
-document.querySelector("#cancel-dialog").addEventListener("click", () => dialog.close());
-form.addEventListener("submit", (event) => {
-  event.preventDefault();
-  const name = nameInput.value.trim();
-  const role = document.querySelector("#person-role").value.trim();
-  if (!name || !role) return;
-  people.push({ name, role, initials: name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase(), color: "#d4eb64", x: 50, y: 50, time: "new" });
-  form.reset();
-  dialog.close();
-  render();
-});
 document.querySelector("#reset-map").addEventListener("click", () => {
   people = [...defaultPeople];
   render();
