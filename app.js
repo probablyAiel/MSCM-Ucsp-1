@@ -50,6 +50,15 @@ people.forEach((person) => {
   if (typeof person.wobblePhase !== "number") person.wobblePhase = Math.random() * Math.PI * 2;
 });
 
+importedData.forEach((person) => {
+  if (typeof person.orbitOffset !== "number") person.orbitOffset = Math.random() * Math.PI * 2;
+  if (typeof person.wobblePhase !== "number") person.wobblePhase = Math.random() * Math.PI * 2;
+  if (typeof person.speed !== "number") person.speed = 0.0003;
+  if (typeof person.targetSpeed !== "number") person.targetSpeed = 0.0003;
+  if (!person.initials && person.name) person.initials = initialsFor(person.name);
+  if (!person.color && person.ring) person.color = ringColors[person.ring - 1] || "#9bcde0";
+});
+
 // 1. Select the button element
 const shareLinkButton = document.querySelector("#share-link-button");
 
@@ -739,34 +748,7 @@ document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click",
   mapPanel.classList.toggle("list-view-active", showList);
 }));
 
-// --- DOM SELECTORS ---
-const exportButton = document.querySelector("#export-button");
-const importButton = document.querySelector("#import-button");
-const importFileInput = document.querySelector("#import-file-input");
-
-// --- SHARE LINK HANDLER ---
-if (shareLinkButton) {
-  shareLinkButton.addEventListener("click", async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      const originalText = shareLinkButton.textContent;
-      shareLinkButton.textContent = "✓";
-      setTimeout(() => {
-        shareLinkButton.textContent = originalText;
-      }, 2000);
-    } catch (err) {
-      const tempInput = document.createElement("input");
-      tempInput.value = window.location.href;
-      document.body.appendChild(tempInput);
-      tempInput.select();
-      document.execCommand("copy");
-      document.body.removeChild(tempInput);
-      alert("Link copied to clipboard!");
-    }
-  });
-}
-
-// --- EXPORT HANDLER ---
+// --- IMPORT & EXPORT HANDLERS ---
 if (exportButton) {
   exportButton.addEventListener("click", () => {
     if (!people.length) {
@@ -789,7 +771,6 @@ if (exportButton) {
   });
 }
 
-// --- IMPORT HANDLER ---
 if (importButton && importFileInput) {
   importButton.addEventListener("click", () => {
     importFileInput.click();
@@ -812,6 +793,8 @@ if (importButton && importFileInput) {
           if (typeof person.wobblePhase !== "number") person.wobblePhase = Math.random() * Math.PI * 2;
           if (typeof person.speed !== "number") person.speed = 0.0003;
           if (typeof person.targetSpeed !== "number") person.targetSpeed = 0.0003;
+          if (!person.initials && person.name) person.initials = initialsFor(person.name);
+          if (!person.color && person.ring) person.color = ringColors[person.ring - 1] || "#9bcde0";
         });
 
         people = importedData;
