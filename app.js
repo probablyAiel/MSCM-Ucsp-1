@@ -45,20 +45,34 @@ people.forEach((person) => {
   if (typeof person.wobblePhase !== "number") person.wobblePhase = Math.random() * Math.PI * 2;
 });
 
+function utf8ToBase64(str) {
+  const bytes = new TextEncoder().encode(str);
+  const binString = Array.from(bytes, (byte) => String.fromCharCode(byte)).join("");
+  return btoa(binString).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function base64ToUtf8(base64) {
+  let str = base64.replace(/-/g, "+").replace(/_/g, "/");
+  while (str.length % 4) {
+    str += "=";
+  }
+  const binString = atob(str);
+  const bytes = Uint8Array.from(binString, (char) => char.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+}
+
 function loadPeople() {
   try {
-    // 1. Check if state exists in URL hash
-    if (window.location.hash.length > 1) {
-      const base64Data = window.location.hash.slice(1);
-      const jsonString = decodeURIComponent(atob(base64Data));
+    const hash = window.location.hash.slice(1);
+    if (hash) {
+      const jsonString = base64ToUtf8(hash);
       const parsed = JSON.parse(jsonString);
-      if (Array.isArray(parsed)) return parsed;
+      if (Array.isArray(parsed) && parsed.length) return parsed;
     }
-  } catch (e) {
-    console.error("Failed to parse URL state:", e);
+  } catch (err) {
+    console.warn("Could not load state from URL hash:", err);
   }
-  
-  // 2. Fallback to localStorage if no URL hash exists
+
   try {
     const saved = JSON.parse(localStorage.getItem(storageKey));
     return Array.isArray(saved) && saved.length ? saved : [...defaultPeople];
@@ -68,18 +82,20 @@ function loadPeople() {
 }
 
 function savePeople() {
-  // Save to LocalStorage as backup
   localStorage.setItem(storageKey, JSON.stringify(people));
 
-  // Encode state to URL Hash
   try {
-    const jsonString = JSON.stringify(people);
-    const base64Data = btoa(encodeURIComponent(jsonString));
-    
-    // Update URL hash without forcing a page reload
-    history.replaceState(null, "", `#${base64Data}`);
-  } catch (e) {
-    console.error("Failed to update URL state:", e);
+    // Strip heavy base64 images from the URL state to keep the link shareable and under browser URL length limits
+    const cleanPeople = people.map(({ image, ...rest }) => ({
+      ...rest,
+      image: image && image.length > 500 ? "" : image
+    }));
+
+    const jsonString = JSON.stringify(cleanPeople);
+    const encoded = utf8ToBase64(jsonString);
+    history.replaceState(null, "", `#${encoded}`);
+  } catch (err) {
+    console.error("Could not save state to URL hash:", err);
   }
 }
 
