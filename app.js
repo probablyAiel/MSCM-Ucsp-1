@@ -34,6 +34,11 @@ const peopleDirectory = document.querySelector("#people-directory");
 const listCount = document.querySelector("#list-count");
 const listSummaryCount = document.querySelector("#list-summary-count");
 const mapPanel = document.querySelector("#map-panel");
+const shareLinkButton = document.querySelector("#share-link-button");
+const exportButton = document.querySelector("#export-button");
+const importButton = document.querySelector("#import-button");
+const importFileInput = document.querySelector("#import-file-input");
+
 const groupNames = ["Primary Groups", "Secondary Groups", "Reference Groups", "In Groups", "Out Groups", "Virtual Groups", "Gemeinschaft", "Gesellschaft"];
 const ringColors = ["#e8a49d", "#e9b47d", "#e6cb83", "#acd18e", "#9bcde0", "#c0a4d0", "#83b7d4", "#7695c3"];
 const storageKey = "social-circle-people-clean-slate-v1";
@@ -50,48 +55,6 @@ people.forEach((person) => {
   if (typeof person.wobblePhase !== "number") person.wobblePhase = Math.random() * Math.PI * 2;
 });
 
-importedData.forEach((person) => {
-  if (typeof person.orbitOffset !== "number") person.orbitOffset = Math.random() * Math.PI * 2;
-  if (typeof person.wobblePhase !== "number") person.wobblePhase = Math.random() * Math.PI * 2;
-  if (typeof person.speed !== "number") person.speed = 0.0003;
-  if (typeof person.targetSpeed !== "number") person.targetSpeed = 0.0003;
-  if (!person.initials && person.name) person.initials = initialsFor(person.name);
-  if (!person.color && person.ring) person.color = ringColors[person.ring - 1] || "#9bcde0";
-});
-
-// 1. Select the button element
-const shareLinkButton = document.querySelector("#share-link-button");
-
-// 2. Add the copy function
-async function copyShareLink() {
-  try {
-    await navigator.clipboard.writeText(window.location.href);
-    
-    // Provide visual feedback
-    const originalText = shareLinkButton.textContent;
-    shareLinkButton.textContent = "✓";
-    shareLinkButton.style.color = "#4ade80"; // soft green feedback
-    
-    setTimeout(() => {
-      shareLinkButton.textContent = originalText;
-      shareLinkButton.style.color = "";
-    }, 2000);
-  } catch (err) {
-    // Fallback if clipboard API is restricted
-    const tempInput = document.createElement("input");
-    tempInput.value = window.location.href;
-    document.body.appendChild(tempInput);
-    tempInput.select();
-    document.execCommand("copy");
-    document.body.removeChild(tempInput);
-    
-    alert("Link copied to clipboard!");
-  }
-}
-
-// 3. Attach the event listener
-shareLinkButton.addEventListener("click", copyShareLink);
-
 function utf8ToBase64(str) {
   const bytes = new TextEncoder().encode(str);
   const binString = Array.from(bytes, (byte) => String.fromCharCode(byte)).join("");
@@ -107,67 +70,6 @@ function base64ToUtf8(base64) {
   const bytes = Uint8Array.from(binString, (char) => char.charCodeAt(0));
   return new TextDecoder().decode(bytes);
 }
-
-// 1. Select the new elements
-const exportButton = document.querySelector("#export-button");
-const importButton = document.querySelector("#import-button");
-const importFileInput = document.querySelector("#import-file-input");
-
-// 2. Export function (Downloads a JSON file of your circle)
-function exportCircle() {
-  if (!people.length) {
-    alert("There are no people in your circle to export.");
-    return;
-  }
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(people, null, 2));
-  const downloadAnchor = document.createElement("a");
-  const dateStr = new Date().toISOString().slice(0, 10);
-  
-  downloadAnchor.setAttribute("href", dataStr);
-  downloadAnchor.setAttribute("download", `social-circle-backup-${dateStr}.json`);
-  document.body.appendChild(downloadAnchor);
-  downloadAnchor.click();
-  downloadAnchor.remove();
-}
-
-// 3. Import function (Reads uploaded JSON file and updates the map)
-function importCircle(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const importedData = JSON.parse(e.target.result);
-      if (!Array.isArray(importedData)) {
-        throw new Error("Invalid file format. Expected a list of people.");
-      }
-
-      // Restore required properties if missing
-      importedData.forEach((person) => {
-        if (typeof person.orbitOffset !== "number") person.orbitOffset = Math.random() * Math.PI * 2;
-        if (typeof person.wobblePhase !== "number") person.wobblePhase = Math.random() * Math.PI * 2;
-        if (typeof person.speed !== "number") person.speed = 0.0003;
-        if (typeof person.targetSpeed !== "number") person.targetSpeed = 0.0003;
-      });
-
-      people = importedData;
-      savePeople();
-      render();
-      alert("Social circle imported successfully!");
-    } catch (err) {
-      alert("Could not import file: " + err.message);
-    } finally {
-      importFileInput.value = ""; // Reset input
-    }
-  };
-  reader.readAsText(file);
-}
-
-// 4. Attach Event Listeners
-exportButton.addEventListener("click", exportCircle);
-importButton.addEventListener("click", () => importFileInput.click());
-importFileInput.addEventListener("change", importCircle);
 
 function loadPeople() {
   try {
@@ -190,10 +92,13 @@ function loadPeople() {
 }
 
 function savePeople() {
-  localStorage.setItem(storageKey, JSON.stringify(people));
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(people));
+  } catch (err) {
+    console.warn("LocalStorage quota exceeded, data not cached locally:", err);
+  }
 
   try {
-    // Strip heavy base64 images from the URL state to keep the link shareable and under browser URL length limits
     const cleanPeople = people.map(({ image, ...rest }) => ({
       ...rest,
       image: image && image.length > 500 ? "" : image
@@ -207,6 +112,90 @@ function savePeople() {
   }
 }
 
+async function copyShareLink() {
+  try {
+    await navigator.clipboard.writeText(window.location.href);
+    if (shareLinkButton) {
+      const originalText = shareLinkButton.textContent;
+      shareLinkButton.textContent = "✓";
+      shareLinkButton.style.color = "#4ade80";
+      setTimeout(() => {
+        shareLinkButton.textContent = originalText;
+        shareLinkButton.style.color = "";
+      }, 2000);
+    }
+  } catch (err) {
+    const tempInput = document.createElement("input");
+    tempInput.value = window.location.href;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempInput);
+    alert("Link copied to clipboard!");
+  }
+}
+
+function exportCircle() {
+  if (!people.length) {
+    alert("There are no people in your circle to export.");
+    return;
+  }
+  try {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(people, null, 2));
+    const downloadAnchor = document.createElement("a");
+    const dateStr = new Date().toISOString().slice(0, 10);
+    
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `social-circle-backup-${dateStr}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  } catch (err) {
+    alert("Export failed: " + err.message);
+  }
+}
+
+function importCircle(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const importedData = JSON.parse(e.target.result);
+      if (!Array.isArray(importedData)) {
+        throw new Error("Invalid file format. Expected a list of people.");
+      }
+
+      importedData.forEach((person) => {
+        if (typeof person.orbitOffset !== "number") person.orbitOffset = Math.random() * Math.PI * 2;
+        if (typeof person.wobblePhase !== "number") person.wobblePhase = Math.random() * Math.PI * 2;
+        if (typeof person.speed !== "number") person.speed = 0.0003;
+        if (typeof person.targetSpeed !== "number") person.targetSpeed = 0.0003;
+        if (!person.initials && person.name) person.initials = initialsFor(person.name);
+        if (!person.color && person.ring) person.color = ringColors[person.ring - 1] || "#9bcde0";
+      });
+
+      people = importedData;
+      savePeople();
+      render();
+      alert("Social circle imported successfully!");
+    } catch (err) {
+      alert("Could not import file: " + err.message);
+    } finally {
+      if (importFileInput) importFileInput.value = "";
+    }
+  };
+  reader.readAsText(file);
+}
+
+if (shareLinkButton) shareLinkButton.addEventListener("click", copyShareLink);
+if (exportButton) exportButton.addEventListener("click", exportCircle);
+if (importButton && importFileInput) {
+  importButton.addEventListener("click", () => importFileInput.click());
+  importFileInput.addEventListener("change", importCircle);
+}
+
 function openEditPersonDialog(index) {
   const person = people[index];
   if (!person) return;
@@ -214,12 +203,10 @@ function openEditPersonDialog(index) {
   formError.textContent = "";
   editPersonIndex.value = index;
 
-  // Change modal copy for edit mode
   personDialogEyebrow.textContent = "Edit connection";
   addPersonTitle.textContent = `Edit ${person.name}`;
   savePersonSubmit.textContent = "Save changes";
 
-  // Pre-fill inputs
   document.querySelector("#person-full-name").value = person.name || "";
   document.querySelector("#person-relationship").value = person.role || "";
   document.querySelector("#person-ring").value = person.ring;
@@ -237,7 +224,6 @@ function openPersonDialog() {
   personForm.reset();
   editPersonIndex.value = "";
   
-  // Reset modal copy back to default
   personDialogEyebrow.textContent = "New connection";
   addPersonTitle.textContent = "Add someone to your circle";
   savePersonSubmit.textContent = "Add to map";
@@ -300,7 +286,7 @@ function render() {
     node.setAttribute("aria-label", `Show information about ${person.name}`);
     node.dataset.ring = person.ring;
     node.dataset.personIndex = index;
-    node.innerHTML = `<span class="person-face" style="background:${person.color}${person.image ? `;background-image:url('${person.image}')` : ""}">${person.initials}</span><span class="person-name">${person.name}</span><span class="person-role">${person.role}</span>`;
+    node.innerHTML = `<span class="person-face" style="background:${person.color}${person.image ? `;background-image:url('${person.image}')` : ""}">${person.initials || ""}</span><span class="person-name">${person.name}</span><span class="person-role">${person.role}</span>`;
     orbit.append(node);
     track.append(orbit);
 
@@ -339,7 +325,7 @@ function renderList() {
       card.className = "directory-card";
       card.type = "button";
       card.style.setProperty("--card-ring-color", ringColors[ringIndex]);
-      card.innerHTML = `<span class="directory-avatar" style="background-color:${person.color}${person.image ? `;background-image:url('${person.image}')` : ""}">${person.initials}</span><span class="directory-main"><strong>${person.name}</strong><span>${person.role}</span></span><span class="directory-note">${person.note}</span>${person.main ? "<span class=\"main-badge\">Main connector</span>" : ""}`;
+      card.innerHTML = `<span class="directory-avatar" style="background-color:${person.color}${person.image ? `;background-image:url('${person.image}')` : ""}">${person.initials || ""}</span><span class="directory-main"><strong>${person.name}</strong><span>${person.role}</span></span><span class="directory-note">${person.note}</span>${person.main ? "<span class=\"main-badge\">Main connector</span>" : ""}`;
       card.addEventListener("click", () => {
         peopleDirectory.querySelectorAll(".directory-card").forEach((item) => item.classList.remove("is-active"));
         card.classList.add("is-active");
@@ -353,7 +339,7 @@ function renderList() {
 
 function showPersonCard(person) {
   pendingPerson = person;
-  cardPortrait.src = person.image;
+  cardPortrait.src = person.image || "";
   cardPortrait.alt = `${person.name} portrait`;
   cardPortrait.style.backgroundColor = person.color;
   cardName.textContent = person.name;
@@ -380,6 +366,7 @@ function selectPerson(person) {
   ringTracks[ringIndex].classList.add("is-focused");
   document.querySelectorAll(".person-node").forEach((node) => node.classList.toggle("is-selected", node.dataset.personIndex === String(people.indexOf(person))));
   const selectedNode = ringTracks[ringIndex].querySelector(`[data-person-index="${people.indexOf(person)}"]`);
+  if (!selectedNode) return;
   const selectedOrbit = selectedNode.closest(".person-orbit");
   selectedOrbit.style.setProperty("--orbit-offset", `${person.orbitOffset}rad`);
   selectedOrbit.classList.add("is-focused-orbit");
@@ -424,7 +411,9 @@ function findPersonAtPoint(event) {
   let closest = null;
   let closestDistance = Infinity;
   document.querySelectorAll(".person-node").forEach((node) => {
-    const bounds = node.querySelector(".person-face").getBoundingClientRect();
+    const faceEl = node.querySelector(".person-face");
+    if (!faceEl) return;
+    const bounds = faceEl.getBoundingClientRect();
     const centerX = bounds.left + bounds.width / 2;
     const centerY = bounds.top + bounds.height / 2;
     const distance = Math.hypot(point.x - centerX, point.y - centerY);
@@ -450,7 +439,9 @@ function updateConnections() {
     const mainNode = ringNodes.find((node) => people[Number(node.dataset.personIndex)]?.main);
     const nodesToCheck = mainNode ? [mainNode] : ringNodes;
     nodesToCheck.forEach((node) => {
-      const face = node.querySelector(".person-face").getBoundingClientRect();
+      const faceEl = node.querySelector(".person-face");
+      if (!faceEl) return;
+      const face = faceEl.getBoundingClientRect();
       const faceX = face.left + face.width / 2;
       const faceY = face.top + face.height / 2;
       const distance = Math.hypot(faceX - originX, faceY - originY);
@@ -480,6 +471,7 @@ function updateConnections() {
 }
 
 function initialsFor(name) {
+  if (!name) return "";
   return name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();
 }
 
@@ -498,7 +490,6 @@ function readImage(file) {
     reader.addEventListener("load", () => {
       const img = new Image();
       img.onload = () => {
-        // Resize image to max 300x300 for avatar portraits
         const canvas = document.createElement("canvas");
         const MAX_WIDTH = 300;
         const MAX_HEIGHT = 300;
@@ -522,7 +513,6 @@ function readImage(file) {
         const ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, width, height);
 
-        // Convert to WebP/JPEG at 0.75 quality to drastically reduce byte size
         const compressedBase64 = canvas.toDataURL("image/jpeg", 0.75);
         resolve(compressedBase64);
       };
@@ -551,7 +541,6 @@ async function addPerson(event) {
     const existingPerson = isEditing ? people[Number(indexVal)] : null;
     let image = existingPerson ? existingPerson.image : "";
 
-    // If a new image file was uploaded, process it
     if (imageInput.files && imageInput.files[0]) {
       image = await readImage(imageInput.files[0]);
     }
@@ -576,10 +565,8 @@ async function addPerson(event) {
     };
 
     if (isEditing) {
-      // Update existing record
       Object.assign(people[Number(indexVal)], updatedData);
     } else {
-      // Create new record
       people.push({
         ...updatedData,
         orbitOffset: people.some((person) => person.ring === ring) ? Math.random() * Math.PI * 2 : 0,
@@ -592,7 +579,7 @@ async function addPerson(event) {
       });
     }
 
-    await savePeople();
+    savePeople();
     render();
     personForm.reset();
     imageLabel.textContent = "Add a portrait";
@@ -662,7 +649,9 @@ function updateOrbitVisuals() {
     if (!person) return;
     const ringIndex = person.ring - 1;
     const orbit = node.closest(".person-orbit");
-    orbit.style.setProperty("--orbit-offset", `${person.orbitOffset}rad`);
+    if (orbit) {
+      orbit.style.setProperty("--orbit-offset", `${person.orbitOffset}rad`);
+    }
     node.style.setProperty("--counter-rotation", `${-ringAngles[ringIndex] - person.orbitOffset}rad`);
   });
 }
@@ -689,13 +678,14 @@ function animatePeople(timestamp) {
     track.style.transform = `rotate(${ringAngles[ringIndex]}rad)`;
     track.querySelectorAll(".person-node").forEach((node) => {
       const owner = people[Number(node.dataset.personIndex)];
-      node.style.setProperty("--counter-rotation", `${-ringAngles[ringIndex] - owner.orbitOffset}rad`);
+      if (owner) {
+        node.style.setProperty("--counter-rotation", `${-ringAngles[ringIndex] - owner.orbitOffset}rad`);
+      }
     });
   });
 
   rebalanceOrbitOffsets(delta, timestamp);
   updateOrbitVisuals();
-
   updateConnections();
 
   requestAnimationFrame(animatePeople);
@@ -747,69 +737,6 @@ document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click",
   map.hidden = showList;
   mapPanel.classList.toggle("list-view-active", showList);
 }));
-
-// --- IMPORT & EXPORT HANDLERS ---
-if (exportButton) {
-  exportButton.addEventListener("click", () => {
-    if (!people.length) {
-      alert("There are no people in your circle to export.");
-      return;
-    }
-    try {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(people, null, 2));
-      const downloadAnchor = document.createElement("a");
-      const dateStr = new Date().toISOString().slice(0, 10);
-      
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `social-circle-backup-${dateStr}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-    } catch (err) {
-      alert("Export failed: " + err.message);
-    }
-  });
-}
-
-if (importButton && importFileInput) {
-  importButton.addEventListener("click", () => {
-    importFileInput.click();
-  });
-
-  importFileInput.addEventListener("change", (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const importedData = JSON.parse(e.target.result);
-        if (!Array.isArray(importedData)) {
-          throw new Error("Invalid file format. Expected a list of people.");
-        }
-
-        importedData.forEach((person) => {
-          if (typeof person.orbitOffset !== "number") person.orbitOffset = Math.random() * Math.PI * 2;
-          if (typeof person.wobblePhase !== "number") person.wobblePhase = Math.random() * Math.PI * 2;
-          if (typeof person.speed !== "number") person.speed = 0.0003;
-          if (typeof person.targetSpeed !== "number") person.targetSpeed = 0.0003;
-          if (!person.initials && person.name) person.initials = initialsFor(person.name);
-          if (!person.color && person.ring) person.color = ringColors[person.ring - 1] || "#9bcde0";
-        });
-
-        people = importedData;
-        savePeople();
-        render();
-        alert("Social circle imported successfully!");
-      } catch (err) {
-        alert("Could not import file: " + err.message);
-      } finally {
-        importFileInput.value = "";
-      }
-    };
-    reader.readAsText(file);
-  });
-}
 
 render();
 requestAnimationFrame(animatePeople);
