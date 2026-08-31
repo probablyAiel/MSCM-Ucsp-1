@@ -740,7 +740,6 @@ document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click",
 }));
 
 // --- DOM SELECTORS ---
-const shareLinkButton = document.querySelector("#share-link-button");
 const exportButton = document.querySelector("#export-button");
 const importButton = document.querySelector("#import-button");
 const importFileInput = document.querySelector("#import-file-input");
