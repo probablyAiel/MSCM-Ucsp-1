@@ -739,5 +739,95 @@ document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click",
   mapPanel.classList.toggle("list-view-active", showList);
 }));
 
+// --- DOM SELECTORS ---
+const shareLinkButton = document.querySelector("#share-link-button");
+const exportButton = document.querySelector("#export-button");
+const importButton = document.querySelector("#import-button");
+const importFileInput = document.querySelector("#import-file-input");
+
+// --- SHARE LINK HANDLER ---
+if (shareLinkButton) {
+  shareLinkButton.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      const originalText = shareLinkButton.textContent;
+      shareLinkButton.textContent = "✓";
+      setTimeout(() => {
+        shareLinkButton.textContent = originalText;
+      }, 2000);
+    } catch (err) {
+      const tempInput = document.createElement("input");
+      tempInput.value = window.location.href;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempInput);
+      alert("Link copied to clipboard!");
+    }
+  });
+}
+
+// --- EXPORT HANDLER ---
+if (exportButton) {
+  exportButton.addEventListener("click", () => {
+    if (!people.length) {
+      alert("There are no people in your circle to export.");
+      return;
+    }
+    try {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(people, null, 2));
+      const downloadAnchor = document.createElement("a");
+      const dateStr = new Date().toISOString().slice(0, 10);
+      
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `social-circle-backup-${dateStr}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    } catch (err) {
+      alert("Export failed: " + err.message);
+    }
+  });
+}
+
+// --- IMPORT HANDLER ---
+if (importButton && importFileInput) {
+  importButton.addEventListener("click", () => {
+    importFileInput.click();
+  });
+
+  importFileInput.addEventListener("change", (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const importedData = JSON.parse(e.target.result);
+        if (!Array.isArray(importedData)) {
+          throw new Error("Invalid file format. Expected a list of people.");
+        }
+
+        importedData.forEach((person) => {
+          if (typeof person.orbitOffset !== "number") person.orbitOffset = Math.random() * Math.PI * 2;
+          if (typeof person.wobblePhase !== "number") person.wobblePhase = Math.random() * Math.PI * 2;
+          if (typeof person.speed !== "number") person.speed = 0.0003;
+          if (typeof person.targetSpeed !== "number") person.targetSpeed = 0.0003;
+        });
+
+        people = importedData;
+        savePeople();
+        render();
+        alert("Social circle imported successfully!");
+      } catch (err) {
+        alert("Could not import file: " + err.message);
+      } finally {
+        importFileInput.value = "";
+      }
+    };
+    reader.readAsText(file);
+  });
+}
+
 render();
 requestAnimationFrame(animatePeople);
