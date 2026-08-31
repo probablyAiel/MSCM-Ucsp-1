@@ -34,9 +34,11 @@
             <button class="tab" type="button" role="tab" aria-selected="false">List view</button>
           </div>
           <div class="toolbar-actions">
-            <button class="add-person-button" id="add-person-button" type="button"><span aria-hidden="true">+</span> Add person</button>
-            <button class="icon-button" id="share-link-button" type="button" aria-label="Copy share link" title="Copy share link">🔗</button>
-            <button class="icon-button" id="reset-map" type="button" aria-label="Reset map positions" title="Reset positions">↺</button>
+  <button class="add-person-button" id="add-person-button" type="button"><span aria-hidden="true">+</span> Add person</button>
+  <button class="icon-button" id="export-button" type="button" aria-label="Export circle data" title="Export JSON">📥</button>
+  <button class="icon-button" id="import-button" type="button" aria-label="Import circle data" title="Import JSON">📤</button>
+  <input type="file" id="import-file-input" accept=".json" style="display: none;" />
+  <button class="icon-button" id="reset-map" type="button" aria-label="Reset map positions" title="Reset positions">↺</button>
           </div>
         </div>
         <div class="circle-map" id="circle-map">
