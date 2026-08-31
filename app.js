@@ -47,6 +47,19 @@ people.forEach((person) => {
 
 function loadPeople() {
   try {
+    // 1. Check if state exists in URL hash
+    if (window.location.hash.length > 1) {
+      const base64Data = window.location.hash.slice(1);
+      const jsonString = decodeURIComponent(atob(base64Data));
+      const parsed = JSON.parse(jsonString);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch (e) {
+    console.error("Failed to parse URL state:", e);
+  }
+  
+  // 2. Fallback to localStorage if no URL hash exists
+  try {
     const saved = JSON.parse(localStorage.getItem(storageKey));
     return Array.isArray(saved) && saved.length ? saved : [...defaultPeople];
   } catch {
@@ -55,7 +68,19 @@ function loadPeople() {
 }
 
 function savePeople() {
+  // Save to LocalStorage as backup
   localStorage.setItem(storageKey, JSON.stringify(people));
+
+  // Encode state to URL Hash
+  try {
+    const jsonString = JSON.stringify(people);
+    const base64Data = btoa(encodeURIComponent(jsonString));
+    
+    // Update URL hash without forcing a page reload
+    history.replaceState(null, "", `#${base64Data}`);
+  } catch (e) {
+    console.error("Failed to update URL state:", e);
+  }
 }
 
 function openPersonDialog() {
