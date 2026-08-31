@@ -1,6 +1,11 @@
 const defaultPeople = [];
 
 const map = document.querySelector("#circle-map");
+const cardEdit = document.querySelector("#card-edit");
+const editPersonIndex = document.querySelector("#edit-person-index");
+const personDialogEyebrow = document.querySelector("#person-dialog-eyebrow");
+const addPersonTitle = document.querySelector("#add-person-title");
+const savePersonSubmit = document.querySelector("#save-person-submit");
 const ringTracks = [...document.querySelectorAll(".ring-track")];
 const connectionLines = [...document.querySelectorAll(".connection")];
 const youNode = document.querySelector(".you-node");
@@ -132,8 +137,42 @@ function savePeople() {
   }
 }
 
+function openEditPersonDialog(index) {
+  const person = people[index];
+  if (!person) return;
+
+  formError.textContent = "";
+  editPersonIndex.value = index;
+
+  // Change modal copy for edit mode
+  personDialogEyebrow.textContent = "Edit connection";
+  addPersonTitle.textContent = `Edit ${person.name}`;
+  savePersonSubmit.textContent = "Save changes";
+
+  // Pre-fill inputs
+  document.querySelector("#person-full-name").value = person.name || "";
+  document.querySelector("#person-relationship").value = person.role || "";
+  document.querySelector("#person-ring").value = person.ring;
+  document.querySelector("#person-main").checked = !!person.main;
+  document.querySelector("#person-note").value = person.note || "";
+  imageLabel.textContent = person.image ? "Change portrait" : "Add a portrait";
+
+  personDialog.classList.add("is-open");
+  personDialog.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+}
+
 function openPersonDialog() {
   formError.textContent = "";
+  personForm.reset();
+  editPersonIndex.value = "";
+  
+  // Reset modal copy back to default
+  personDialogEyebrow.textContent = "New connection";
+  addPersonTitle.textContent = "Add someone to your circle";
+  savePersonSubmit.textContent = "Add to map";
+  imageLabel.textContent = "Add a portrait";
+
   personDialog.classList.add("is-open");
   personDialog.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
@@ -399,36 +438,61 @@ async function addPerson(event) {
   const role = formData.get("relationship").trim();
   const ring = Number(formData.get("ring"));
   const main = formData.get("main") === "on";
+  const indexVal = editPersonIndex.value;
+  const isEditing = indexVal !== "";
+
   if (!name || !role || !ring) return;
 
   try {
-    const image = await readImage(imageInput.files[0]);
+    const existingPerson = isEditing ? people[Number(indexVal)] : null;
+    let image = existingPerson ? existingPerson.image : "";
+
+    // If a new image file was uploaded, process it
+    if (imageInput.files && imageInput.files[0]) {
+      image = await readImage(imageInput.files[0]);
+    }
+
     if (main) {
-      people.forEach((person) => {
-        if (person.ring === ring) person.main = false;
+      people.forEach((person, idx) => {
+        if (person.ring === ring && idx !== Number(indexVal)) {
+          person.main = false;
+        }
       });
     }
-    people.push({
+
+    const updatedData = {
       name,
       role,
       initials: initialsFor(name),
       color: ringColors[ring - 1],
       ring,
       main,
-      orbitOffset: people.some((person) => person.ring === ring) ? Math.random() * Math.PI * 2 : 0,
       image,
-      note: formData.get("note").trim() || `${name} is part of my ${groupNames[ring - 1].toLowerCase()} circle.`,
-      angle: Math.random() * Math.PI * 2,
-      direction: Math.random() > .5 ? 1 : -1,
-      speed: 0.0003,
-      targetSpeed: 0.0003,
-      nextChange: 0,
-      wobblePhase: Math.random() * Math.PI * 2
-    });
-    savePeople();
+      note: formData.get("note").trim() || `${name} is part of my ${groupNames[ring - 1].toLowerCase()} circle.`
+    };
+
+    if (isEditing) {
+      // Update existing record
+      Object.assign(people[Number(indexVal)], updatedData);
+    } else {
+      // Create new record
+      people.push({
+        ...updatedData,
+        orbitOffset: people.some((person) => person.ring === ring) ? Math.random() * Math.PI * 2 : 0,
+        angle: Math.random() * Math.PI * 2,
+        direction: Math.random() > 0.5 ? 1 : -1,
+        speed: 0.0003,
+        targetSpeed: 0.0003,
+        nextChange: 0,
+        wobblePhase: Math.random() * Math.PI * 2
+      });
+    }
+
+    await savePeople();
     render();
     personForm.reset();
     imageLabel.textContent = "Add a portrait";
+    closePersonCard();
     closePersonDialog();
   } catch (error) {
     formError.textContent = error.message;
@@ -445,6 +509,15 @@ function unlockAddPerson(event) {
   closePasswordDialog();
   openPersonDialog();
 }
+
+cardEdit.addEventListener("click", () => {
+  if (pendingPerson) {
+    const index = people.indexOf(pendingPerson);
+    if (index !== -1) {
+      openEditPersonDialog(index);
+    }
+  }
+});
 
 function unlockReset(event) {
   event.preventDefault();
