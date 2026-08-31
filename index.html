@@ -102,46 +102,50 @@
   </main>
 
   <div class="person-dialog" id="person-dialog" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="add-person-title">
-    <form id="person-form">
-      <button class="dialog-close" id="dialog-close" type="button" aria-label="Close add person form">×</button>
-      <p class="eyebrow">New connection</p>
-      <h2 id="add-person-title">Add someone to your circle</h2>
-      <div class="form-grid">
-        <label class="form-field form-field-wide">Full name
-          <input id="person-full-name" name="fullName" type="text" maxlength="50" placeholder="e.g. Jordan Lee" required />
-        </label>
-        <label class="form-field">Relationship
-          <input id="person-relationship" name="relationship" type="text" maxlength="35" placeholder="e.g. Friend" required />
-        </label>
-        <label class="form-field">Ring
-          <select id="person-ring" name="ring" required>
-            <option value="1">Primary Groups</option>
-            <option value="2">Secondary Groups</option>
-            <option value="3">Reference Groups</option>
-            <option value="4">In Groups</option>
-            <option value="5">Out Groups</option>
-            <option value="6">Virtual Groups</option>
-            <option value="7">Gemeinschaft</option>
-            <option value="8">Gesellschaft</option>
-          </select>
-        </label>
-      </div>
-      <label class="checkbox-field"><input id="person-main" name="main" type="checkbox" /> <span>Make this the main person for this ring</span></label>
-      <label class="form-field">Why are they in this ring?
-        <textarea id="person-note" name="note" rows="4" maxlength="280" placeholder="Write a short explanation for your map..."></textarea>
+  <form id="person-form">
+    <button class="dialog-close" id="dialog-close" type="button" aria-label="Close form">×</button>
+    <p class="eyebrow" id="person-dialog-eyebrow">New connection</p>
+    <h2 id="add-person-title">Add someone to your circle</h2>
+    
+    <!-- Hidden input to track editing index -->
+    <input type="hidden" id="edit-person-index" name="editIndex" value="" />
+
+    <div class="form-grid">
+      <label class="form-field form-field-wide">Full name
+        <input id="person-full-name" name="fullName" type="text" maxlength="50" placeholder="e.g. Jordan Lee" required />
       </label>
-      <label class="image-upload" for="person-image">
-        <span class="upload-icon" aria-hidden="true">↑</span>
-        <span><strong id="image-label">Add a portrait</strong><small>PNG, JPG, or WEBP · up to 5 MB</small></span>
-        <input id="person-image" name="image" type="file" accept="image/png,image/jpeg,image/webp" />
+      <label class="form-field">Relationship
+        <input id="person-relationship" name="relationship" type="text" maxlength="35" placeholder="e.g. Friend" required />
       </label>
-      <p class="form-error" id="form-error" role="alert"></p>
-      <div class="dialog-actions">
-        <button class="text-button" id="cancel-person" type="button">Cancel</button>
-        <button class="primary-button" type="submit">Add to map</button>
-      </div>
-    </form>
-  </div>
+      <label class="form-field">Ring
+        <select id="person-ring" name="ring" required>
+          <option value="1">Primary Groups</option>
+          <option value="2">Secondary Groups</option>
+          <option value="3">Reference Groups</option>
+          <option value="4">In Groups</option>
+          <option value="5">Out Groups</option>
+          <option value="6">Virtual Groups</option>
+          <option value="7">Gemeinschaft</option>
+          <option value="8">Gesellschaft</option>
+        </select>
+      </label>
+    </div>
+    <label class="checkbox-field"><input id="person-main" name="main" type="checkbox" /> <span>Make this the main person for this ring</span></label>
+    <label class="form-field">Why are they in this ring?
+      <textarea id="person-note" name="note" rows="4" maxlength="280" placeholder="Write a short explanation for your map..."></textarea>
+    </label>
+    <label class="image-upload" for="person-image">
+      <span class="upload-icon" aria-hidden="true">↑</span>
+      <span><strong id="image-label">Add a portrait</strong><small>PNG, JPG, or WEBP · up to 5 MB</small></span>
+      <input id="person-image" name="image" type="file" accept="image/png,image/jpeg,image/webp" />
+    </label>
+    <p class="form-error" id="form-error" role="alert"></p>
+    <div class="dialog-actions">
+      <button class="text-button" id="cancel-person" type="button">Cancel</button>
+      <button class="primary-button" id="save-person-submit" type="submit">Add to map</button>
+    </div>
+  </form>
+</div>
 
   <div class="person-dialog password-dialog" id="password-dialog" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="password-title">
     <form id="password-form">
