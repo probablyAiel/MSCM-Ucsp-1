@@ -45,6 +45,39 @@ people.forEach((person) => {
   if (typeof person.wobblePhase !== "number") person.wobblePhase = Math.random() * Math.PI * 2;
 });
 
+// 1. Select the button element
+const shareLinkButton = document.querySelector("#share-link-button");
+
+// 2. Add the copy function
+async function copyShareLink() {
+  try {
+    await navigator.clipboard.writeText(window.location.href);
+    
+    // Provide visual feedback
+    const originalText = shareLinkButton.textContent;
+    shareLinkButton.textContent = "✓";
+    shareLinkButton.style.color = "#4ade80"; // soft green feedback
+    
+    setTimeout(() => {
+      shareLinkButton.textContent = originalText;
+      shareLinkButton.style.color = "";
+    }, 2000);
+  } catch (err) {
+    // Fallback if clipboard API is restricted
+    const tempInput = document.createElement("input");
+    tempInput.value = window.location.href;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempInput);
+    
+    alert("Link copied to clipboard!");
+  }
+}
+
+// 3. Attach the event listener
+shareLinkButton.addEventListener("click", copyShareLink);
+
 function utf8ToBase64(str) {
   const bytes = new TextEncoder().encode(str);
   const binString = Array.from(bytes, (byte) => String.fromCharCode(byte)).join("");
