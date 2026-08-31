@@ -34,13 +34,13 @@
             <button class="tab" type="button" role="tab" aria-selected="false">List view</button>
           </div>
           <div class="toolbar-actions">
-  <button class="add-person-button" id="add-person-button" type="button"><span aria-hidden="true">+</span> Add person</button>
-  <button class="icon-button" id="share-link-button" type="button" aria-label="Copy share link" title="Copy share link">🔗</button>
-  <button class="icon-button" id="export-button" type="button" aria-label="Export circle data" title="Export JSON">📥</button>
-  <button class="icon-button" id="import-button" type="button" aria-label="Import circle data" title="Import JSON">📤</button>
-  <input type="file" id="import-file-input" accept=".json" style="display: none;" />
-  <button class="icon-button" id="reset-map" type="button" aria-label="Reset map positions" title="Reset positions">↺</button>
-</div>
+            <button class="add-person-button" id="add-person-button" type="button"><span aria-hidden="true">+</span> Add person</button>
+            <button class="icon-button" id="share-link-button" type="button" aria-label="Copy share link" title="Copy share link">🔗</button>
+            <button class="icon-button" id="export-button" type="button" aria-label="Export circle data" title="Export JSON">📥</button>
+            <button class="icon-button" id="import-button" type="button" aria-label="Import circle data" title="Import JSON">📤</button>
+            <input type="file" id="import-file-input" accept=".json" style="display: none;" />
+            <button class="icon-button" id="reset-map" type="button" aria-label="Reset map positions" title="Reset positions">↺</button>
+          </div>
         </div>
         <div class="circle-map" id="circle-map">
           <div class="map-grid" aria-hidden="true"></div>
@@ -69,19 +69,19 @@
             <span class="you-label">You</span>
           </div>
           <article class="person-card" id="person-card" aria-hidden="true" aria-live="polite">
-  <button class="card-close" id="card-close" type="button" aria-label="Close person card">×</button>
-  <button class="card-edit" id="card-edit" type="button" aria-label="Edit person" style="position: absolute; top: 12px; right: 44px; background: none; border: none; cursor: pointer; font-size: 14px;">✏️</button>
-  <div class="card-portrait-wrap"><img class="card-portrait" id="card-portrait" alt="" /></div>
-  <div class="card-content">
-    <p class="card-kicker">A person in my circle</p>
-    <h2 id="card-name"></h2>
-    <dl class="card-details">
-      <div><dt>Relationship</dt><dd id="card-role"></dd></div>
-      <div><dt>Group</dt><dd id="card-group"></dd></div>
-    </dl>
-    <p class="card-note" id="card-note"></p>
-  </div>
-</article>
+            <button class="card-close" id="card-close" type="button" aria-label="Close person card">×</button>
+            <button class="card-edit" id="card-edit" type="button" aria-label="Edit person" style="position: absolute; top: 12px; right: 44px; background: none; border: none; cursor: pointer; font-size: 14px;">✏️</button>
+            <div class="card-portrait-wrap"><img class="card-portrait" id="card-portrait" alt="" /></div>
+            <div class="card-content">
+              <p class="card-kicker">A person in my circle</p>
+              <h2 id="card-name"></h2>
+              <dl class="card-details">
+                <div><dt>Relationship</dt><dd id="card-role"></dd></div>
+                <div><dt>Group</dt><dd id="card-group"></dd></div>
+              </dl>
+              <p class="card-note" id="card-note"></p>
+            </div>
+          </article>
           <div class="map-hint"><span aria-hidden="true">✥</span> Drag to arrange</div>
         </div>
         <div class="list-view" id="list-view" aria-label="People in my social circle" hidden>
@@ -101,55 +101,53 @@
           <div class="people-directory" id="people-directory"></div>
         </div>
       </div>
-
     </section>
   </main>
 
   <div class="person-dialog" id="person-dialog" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="add-person-title">
-  <form id="person-form">
-    <button class="dialog-close" id="dialog-close" type="button" aria-label="Close form">×</button>
-    <p class="eyebrow" id="person-dialog-eyebrow">New connection</p>
-    <h2 id="add-person-title">Add someone to your circle</h2>
-    
-    <!-- Hidden input to track editing index -->
-    <input type="hidden" id="edit-person-index" name="editIndex" value="" />
+    <form id="person-form">
+      <button class="dialog-close" id="dialog-close" type="button" aria-label="Close form">×</button>
+      <p class="eyebrow" id="person-dialog-eyebrow">New connection</p>
+      <h2 id="add-person-title">Add someone to your circle</h2>
+      
+      <input type="hidden" id="edit-person-index" name="editIndex" value="" />
 
-    <div class="form-grid">
-      <label class="form-field form-field-wide">Full name
-        <input id="person-full-name" name="fullName" type="text" maxlength="50" placeholder="e.g. Jordan Lee" required />
+      <div class="form-grid">
+        <label class="form-field form-field-wide">Full name
+          <input id="person-full-name" name="fullName" type="text" maxlength="50" placeholder="e.g. Jordan Lee" required />
+        </label>
+        <label class="form-field">Relationship
+          <input id="person-relationship" name="relationship" type="text" maxlength="35" placeholder="e.g. Friend" required />
+        </label>
+        <label class="form-field">Ring
+          <select id="person-ring" name="ring" required>
+            <option value="1">Primary Groups</option>
+            <option value="2">Secondary Groups</option>
+            <option value="3">Reference Groups</option>
+            <option value="4">In Groups</option>
+            <option value="5">Out Groups</option>
+            <option value="6">Virtual Groups</option>
+            <option value="7">Gemeinschaft</option>
+            <option value="8">Gesellschaft</option>
+          </select>
+        </label>
+      </div>
+      <label class="checkbox-field"><input id="person-main" name="main" type="checkbox" /> <span>Make this the main person for this ring</span></label>
+      <label class="form-field">Why are they in this ring?
+        <textarea id="person-note" name="note" rows="4" maxlength="280" placeholder="Write a short explanation for your map..."></textarea>
       </label>
-      <label class="form-field">Relationship
-        <input id="person-relationship" name="relationship" type="text" maxlength="35" placeholder="e.g. Friend" required />
+      <label class="image-upload" for="person-image">
+        <span class="upload-icon" aria-hidden="true">↑</span>
+        <span><strong id="image-label">Add a portrait</strong><small>PNG, JPG, or WEBP · up to 5 MB</small></span>
+        <input id="person-image" name="image" type="file" accept="image/png,image/jpeg,image/webp" />
       </label>
-      <label class="form-field">Ring
-        <select id="person-ring" name="ring" required>
-          <option value="1">Primary Groups</option>
-          <option value="2">Secondary Groups</option>
-          <option value="3">Reference Groups</option>
-          <option value="4">In Groups</option>
-          <option value="5">Out Groups</option>
-          <option value="6">Virtual Groups</option>
-          <option value="7">Gemeinschaft</option>
-          <option value="8">Gesellschaft</option>
-        </select>
-      </label>
-    </div>
-    <label class="checkbox-field"><input id="person-main" name="main" type="checkbox" /> <span>Make this the main person for this ring</span></label>
-    <label class="form-field">Why are they in this ring?
-      <textarea id="person-note" name="note" rows="4" maxlength="280" placeholder="Write a short explanation for your map..."></textarea>
-    </label>
-    <label class="image-upload" for="person-image">
-      <span class="upload-icon" aria-hidden="true">↑</span>
-      <span><strong id="image-label">Add a portrait</strong><small>PNG, JPG, or WEBP · up to 5 MB</small></span>
-      <input id="person-image" name="image" type="file" accept="image/png,image/jpeg,image/webp" />
-    </label>
-    <p class="form-error" id="form-error" role="alert"></p>
-    <div class="dialog-actions">
-      <button class="text-button" id="cancel-person" type="button">Cancel</button>
-      <button class="primary-button" id="save-person-submit" type="submit">Add to map</button>
-    </div>
-  </form>
-</div>
+      <p class="form-error" id="form-error" role="alert"></p>
+      <div class="dialog-actions">
+        <button class="text-button" id="cancel-person" type="button">Cancel</button>
+        <button class="primary-button" id="save-person-submit" type="submit">Add to map</button>
+      </div>
+    </form>
+  </div>
 
   <div class="person-dialog password-dialog" id="password-dialog" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="password-title">
     <form id="password-form">
@@ -158,7 +156,7 @@
       <h2 id="password-title">Unlock your circle</h2>
       <p class="password-copy">Add a new person only when you are ready to make room in the map.</p>
       <label class="form-field">Password
-          <input id="add-password" type="password" autocomplete="off" maxlength="12" placeholder="Enter workspace password" required />
+        <input id="add-password" type="password" autocomplete="off" maxlength="12" placeholder="Enter workspace password" required />
       </label>
       <p class="form-error" id="password-error" role="alert"></p>
       <div class="dialog-actions">
@@ -185,6 +183,6 @@
     </form>
   </div>
 
-  <script src="app.js?v=18"></script>
+  <script src="app.js?v=19"></script>
 </body>
 </html>
